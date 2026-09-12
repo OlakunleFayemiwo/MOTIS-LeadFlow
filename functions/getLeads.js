@@ -1,16 +1,16 @@
 const { createClient } = require("@supabase/supabase-js");
+const { authErrorResponse, verifySession } = require("./crmAuth");
+const { isLeadStatus } = require("./leadStatus");
 
 // Initialize Supabase Client
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 exports.handler = async (event, context) => {
-  // CORS Headers to allow CRM dashboard queries
+  // CRM responses must not be cached by a browser or intermediary.
   const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Content-Type": "application/json",
+    "Cache-Control": "no-store",
   };
 
   // Handle preflight CORS request
@@ -31,17 +31,8 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Simple token-based admin authentication
-  const authHeader = event.headers.authorization;
-  if (!authHeader || authHeader !== "Bearer MOTIS_ADMIN_123") {
-    return {
-      statusCode: 401,
-      headers,
-      body: JSON.stringify({
-        message: "Access Denied: Invalid Security Token",
-      }),
-    };
-  }
+  const session = verifySession(event);
+  if (!session.authenticated) return authErrorResponse(headers, session.reason);
 
   // Check database configuration
   if (!supabaseUrl || !supabaseSecretKey) {
@@ -61,6 +52,14 @@ exports.handler = async (event, context) => {
   const queryParams = event.queryStringParameters || {};
   const { brand, status } = queryParams;
 
+  if (status !== undefined && !isLeadStatus(status)) {
+    return {
+      statusCode: 422,
+      headers,
+      body: JSON.stringify({ message: "Validation Failed: unsupported lead status filter." }),
+    };
+  }
+
   try {
     const supabase = createClient(supabaseUrl, supabaseSecretKey);
 
@@ -76,7 +75,7 @@ exports.handler = async (event, context) => {
     }
 
     // Apply Status dynamic filter
-    if (status && status !== "all") {
+    if (status !== undefined) {
       query = query.eq("status", status);
     }
 

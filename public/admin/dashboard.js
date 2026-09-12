@@ -48,35 +48,39 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedLead = null;
   let currentActiveRole = "admin"; // 'admin' | 'sales' | 'production'
 
-  const ADMIN_PASS = "MOTIS_ADMIN_123";
-
   // --- Authentication ---
-  function checkAuth() {
-    const token = sessionStorage.getItem("motis_admin_token");
-    if (token === "authenticated") {
-      showDashboard();
-      fetchLeads();
-    } else {
-      showLogin();
-    }
+  async function checkAuth() {
+    showLogin();
+    await fetchLeads();
   }
 
-  loginForm.addEventListener("submit", (e) => {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (passwordInput.value === ADMIN_PASS) {
-      sessionStorage.setItem("motis_admin_token", "authenticated");
+    try {
+      const response = await fetch("/.netlify/functions/crmLogin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: passwordInput.value }),
+      });
+
+      if (!response.ok) throw new Error("Login failed");
+
       loginError.classList.add("hidden-section");
       passwordInput.value = "";
       showDashboard();
       fetchLeads();
-    } else {
+    } catch (error) {
       loginError.classList.remove("hidden-section");
     }
   });
 
-  logoutBtn.addEventListener("click", () => {
-    sessionStorage.removeItem("motis_admin_token");
-    showLogin();
+  logoutBtn.addEventListener("click", async () => {
+    try {
+      await fetch("/.netlify/functions/crmLogout", { method: "POST" });
+    } finally {
+      currentLeads = [];
+      showLogin();
+    }
   });
 
   function showLogin() {
@@ -135,9 +139,11 @@ document.addEventListener("DOMContentLoaded", () => {
     salesLoadingState.classList.remove("hidden-section");
 
     try {
-      const response = await fetch("/.netlify/functions/getLeads", {
-        headers: { Authorization: `Bearer ${ADMIN_PASS}` },
-      });
+      const response = await fetch("/.netlify/functions/getLeads");
+      if (response.status === 401) {
+        showLogin();
+        return;
+      }
       if (!response.ok) throw new Error("API Sync Failed");
 
       const data = await response.json();
@@ -303,6 +309,14 @@ document.addEventListener("DOMContentLoaded", () => {
         minute: "2-digit",
       });
 
+      const statusLabels = {
+        new: "New",
+        contacted: "Contacted",
+        qualified: "Qualified",
+        won: "Won",
+        lost: "Lost",
+      };
+
       // Status pills
       let statusColor =
         "bg-yellow-500/10 border border-yellow-500/20 text-yellow-400";
@@ -313,6 +327,8 @@ document.addEventListener("DOMContentLoaded", () => {
         statusColor = "bg-red-500/10 border border-red-500/20 text-red-400";
       if (lead.status === "contacted")
         statusColor = "bg-blue-500/10 border border-blue-500/20 text-blue-400";
+      if (lead.status === "qualified")
+        statusColor = "bg-purple-500/10 border border-purple-500/20 text-purple-400";
 
       const tr = document.createElement("tr");
       tr.className =
@@ -334,7 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
                 <td class="px-6 py-4">
                     <span class="inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusColor}">
-                        ${lead.status || "pending"}
+                        ${statusLabels[lead.status] || "New"}
                     </span>
                 </td>
                 <td class="px-6 py-4 text-right">
@@ -423,12 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? "inline-flex px-3 py-1 rounded-sm text-xs font-semibold bg-blue-500/10 border border-blue-500/20 text-blue-400"
         : "inline-flex px-3 py-1 rounded-sm text-xs font-semibold bg-motis-orange/10 border border-motis-orange/20 text-motis-orange";
 
-    const normalizedStatus = String(
-      selectedLead.status || "pending",
-    ).toLowerCase();
-
-    modalStatusSelect.value =
-      normalizedStatus === "new" ? "pending" : normalizedStatus;
+    modalStatusSelect.value = selectedLead.status || "new";
 
     // Display Modal
     leadModal.classList.remove("opacity-0", "pointer-events-none");
@@ -452,7 +463,6 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer MOTIS_ADMIN_123",
         },
         body: JSON.stringify({
           leadId: selectedLead.id,
@@ -462,6 +472,11 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const result = await response.json();
+      if (response.status === 401) {
+        closeLeadModal();
+        showLogin();
+        return;
+      }
       if (response.ok && result.success) {
         alert("Protocol Ledger Updated Successfully!");
         closeLeadModal();

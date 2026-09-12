@@ -28,7 +28,9 @@ create table leads (
     product_line text not null,
     quantity text,
     message text not null,
-    status text not null default 'New',
+    status text not null default 'new'
+        constraint leads_status_canonical_check
+        check (status in ('new', 'contacted', 'qualified', 'won', 'lost')),
     admin_notes text,
     brand text not null default 'motis_industrial',
     referrer_id text,
@@ -46,16 +48,9 @@ create index if not exists idx_leads_referrer on leads (referrer_id);
 -- This is an enterprise security protocol to lock down access.
 alter table leads enable row level security;
 
--- 6. RLS Policies
--- A. Since our serverless Netlify functions use the "service_role" key,
---    they completely bypass RLS and have full secure read/write access.
--- B. We will deny all public direct read/write access from browsers 
---    to ensure hackers cannot read lead info or modify database logs!
-create policy "Allow Netlify service role full access"
-on leads
-for all
-using (true)
-with check (true);
+-- 6. Do not create public RLS policies.
+-- The serverless functions use the Supabase service-role key, which bypasses RLS.
+-- With RLS enabled and no public policy, browser clients cannot read or write leads.
 
 -- =====================================================================
 -- Verification Query

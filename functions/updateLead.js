@@ -1,16 +1,20 @@
 const { createClient } = require("@supabase/supabase-js");
+const { authErrorResponse, verifySession } = require("./crmAuth");
+const { isLeadStatus } = require("./leadStatus");
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const MAX_ADMIN_NOTES_LENGTH = 5000;
 
 // Initialize Supabase Client
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
 
 exports.handler = async (event, context) => {
-  // CORS Headers to allow CRM dashboard write operations
+  // CRM responses must not be cached by a browser or intermediary.
   const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json",
+    "Cache-Control": "no-store",
   };
 
   // Handle preflight CORS request
@@ -31,17 +35,8 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Simple token-based admin authentication
-  const authHeader = event.headers.authorization;
-  if (!authHeader || authHeader !== "Bearer MOTIS_ADMIN_123") {
-    return {
-      statusCode: 401,
-      headers,
-      body: JSON.stringify({
-        message: "Access Denied: Invalid Security Token",
-      }),
-    };
-  }
+  const session = verifySession(event);
+  if (!session.authenticated) return authErrorResponse(headers, session.reason);
 
   // Check database configuration
   if (!supabaseUrl || !supabaseSecretKey) {
@@ -69,15 +64,49 @@ exports.handler = async (event, context) => {
     };
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ message: "Request body must be an object" }),
+    };
+  }
+
   const { leadId, status, admin_notes } = body;
 
   // Validate required update fields
-  if (!leadId) {
+  if (
+    typeof leadId !== "string" ||
+    !UUID_PATTERN.test(leadId) ||
+    (status === undefined && admin_notes === undefined)
+  ) {
     return {
       statusCode: 400,
       headers,
       body: JSON.stringify({
-        message: "Validation Failed: leadId is required.",
+        message: "Validation Failed: a valid leadId and an update field are required.",
+      }),
+    };
+  }
+
+  if (status !== undefined && !isLeadStatus(status)) {
+    return {
+      statusCode: 422,
+      headers,
+      body: JSON.stringify({ message: "Validation Failed: unsupported lead status." }),
+    };
+  }
+
+  if (
+    admin_notes !== undefined &&
+    (typeof admin_notes !== "string" ||
+      admin_notes.length > MAX_ADMIN_NOTES_LENGTH)
+  ) {
+    return {
+      statusCode: 422,
+      headers,
+      body: JSON.stringify({
+        message: "Validation Failed: admin_notes must be text up to 5000 characters.",
       }),
     };
   }
@@ -88,7 +117,7 @@ exports.handler = async (event, context) => {
     // Prepare fields to update
     const updateData = {};
     if (status !== undefined) updateData.status = status;
-    if (admin_notes !== undefined) updateData.admin_notes = admin_notes;
+    if (admin_notes !== undefined) updateData.admin_notes = admin_notes.trim();
 
     // Update the record in Supabase
     const { data: updatedLeads, error } = await supabase
@@ -124,10 +153,7 @@ exports.handler = async (event, context) => {
       headers,
       body: JSON.stringify({
         success: false,
-        message: error.message || "Internal Server Error while updating lead.",
-        details: error.details || null,
-        hint: error.hint || null,
-        code: error.code || null,
+        message: "Internal Server Error while updating lead.",
       }),
     };
   }

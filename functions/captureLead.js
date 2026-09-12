@@ -44,7 +44,23 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Destructure incoming lead payload
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ message: "Request body must be an object" }),
+    };
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, "status")) {
+    return {
+      statusCode: 400,
+      headers,
+      body: JSON.stringify({ message: "Lead status is assigned by the server" }),
+    };
+  }
+
+  // Destructure the public fields explicitly allowed into a lead record.
   const {
     name,
     phone,
@@ -59,7 +75,12 @@ exports.handler = async (event, context) => {
   } = body;
 
   // Validate required fields (following our strict PRD specification)
-  if (!name || !phone || !location || !product_line || !message) {
+  const requiredFields = { name, phone, location, product_line, message };
+  if (
+    Object.values(requiredFields).some(
+      (value) => typeof value !== "string" || !value.trim(),
+    )
+  ) {
     return {
       statusCode: 400,
       headers,
@@ -95,15 +116,18 @@ exports.handler = async (event, context) => {
         {
           name: name.trim(),
           phone: phone.trim(),
-          email: email ? email.trim() : null,
+          email: typeof email === "string" && email ? email.trim() : null,
           location: location.trim(),
           product_line: product_line.trim(),
-          quantity: quantity ? quantity.trim() : null,
+          quantity: typeof quantity === "string" && quantity ? quantity.trim() : null,
           message: message.trim(),
-          brand: brand ? brand.trim() : "motis_industrial",
-          referrer_id: referrer_id ? referrer_id.trim() : null,
+          brand: typeof brand === "string" && brand ? brand.trim() : "motis_industrial",
+          referrer_id:
+            typeof referrer_id === "string" && referrer_id
+              ? referrer_id.trim()
+              : null,
           ai_estimation: ai_estimation || null,
-          status: "New",
+          status: "new",
         },
       ])
       .select();

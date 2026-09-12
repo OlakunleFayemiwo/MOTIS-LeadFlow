@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Motis LeadFlow MVP",
   "main": "index.js",
+  "scripts": {
+    "test": "node --test"
+  },
   "dependencies": {
     "@netlify/blobs": "^7.3.0",
     "@supabase/supabase-js": "^2.43.4",
