@@ -1,13 +1,11 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { buildJsonResponse, getPublicCorsHeaders } = require("./utils/response");
 
 // =====================================================================
 // MOTIS AI QUOTE ASSISTANT - SERVERLESS FUNCTION
 // Powered by Google Gemini Flash API
 // =====================================================================
 
-// The Master System Prompt - the "DNA" of Chemist AI
-// This defines the AI's personality, knowledge base, and output format.
-// The B2C System Prompt - More Paint Brand Focus
 const MORE_PAINT_SYSTEM_PROMPT = `You are "Chemist AI", the Lead Technical Paint Estimator for **More Paint**, the flagship architectural coating brand of **Motis Industries Limited**.
 
 Your role is to help B2C homeowners, interior designers, and local painting contractors select the correct paint from the More Paint catalog, calculate the exact paint volumes they need, and provide professional application guidance.
@@ -32,7 +30,6 @@ Your role is to help B2C homeowners, interior designers, and local painting cont
 2. Never quote prices — redirect to sales representatives.
 3. End with a call to action to submit the B2C quote form or send their estimate to WhatsApp.`;
 
-// The B2B System Prompt - Motis B2B Industrial Conglomerate Focus
 const MOTIS_B2B_SYSTEM_PROMPT = `You are the "Director of Technical Engineering", the B2B chemical consultant for **Motis Industries Limited**.
 
 Your role is to advise enterprise buyers (procurement officers, real estate developers, warehouse managers, civil engineers) on commercial chemical specifications, concrete sealants, floor epoxies, and large-scale architectural projects.
@@ -54,35 +51,28 @@ Your role is to advise enterprise buyers (procurement officers, real estate deve
 2. Recommend chemical volume estimates in wholesale Drums (200L) or Intermediate Bulk Containers (IBC - 1000L) where applicable.
 3. Never quote final wholesale prices — direct them to "Submit B2B Supply Protocol Form" or click B2B sales contact.`;
 
-
 exports.handler = async (event, context) => {
-  // CORS Headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json',
-  };
+  const headers = getPublicCorsHeaders("POST, OPTIONS");
 
   // Preflight CORS
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: JSON.stringify({ message: 'OK' }) };
+  if (event.httpMethod === "OPTIONS") {
+    return buildJsonResponse(200, { message: "OK" }, headers);
   }
 
   // Only accept POST
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: JSON.stringify({ message: 'Method Not Allowed' }) };
+  if (event.httpMethod !== "POST") {
+    return buildJsonResponse(405, { message: "Method Not Allowed" }, headers);
   }
 
   // Validate API key configuration
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.error("Configuration Error: GEMINI_API_KEY missing from Environment Variables!");
-    return {
-      statusCode: 500,
+    return buildJsonResponse(
+      500,
+      { message: "AI service is not configured. Please contact the administrator." },
       headers,
-      body: JSON.stringify({ message: 'AI service is not configured. Please contact the administrator.' }),
-    };
+    );
   }
 
   // Parse incoming request
@@ -90,20 +80,19 @@ exports.handler = async (event, context) => {
   try {
     body = JSON.parse(event.body);
   } catch (err) {
-    return { statusCode: 400, headers, body: JSON.stringify({ message: 'Invalid JSON request body' }) };
+    return buildJsonResponse(400, { message: "Invalid JSON request body" }, headers);
   }
 
   // Extract conversation history, new user message, and brand division
-  const { message, history = [], brand = 'more_paint' } = body;
+  const { message, history = [], brand = "more_paint" } = body;
 
   if (!message || !message.trim()) {
-    return { statusCode: 400, headers, body: JSON.stringify({ message: 'A message is required.' }) };
+    return buildJsonResponse(400, { message: "A message is required." }, headers);
   }
 
   // Select prompt dynamically based on brand division
-  const selectedInstructionPrompt = (brand === 'motis') 
-    ? MOTIS_B2B_SYSTEM_PROMPT 
-    : MORE_PAINT_SYSTEM_PROMPT;
+  const selectedInstructionPrompt =
+    brand === "motis" ? MOTIS_B2B_SYSTEM_PROMPT : MORE_PAINT_SYSTEM_PROMPT;
 
   try {
     // Initialize Gemini client
@@ -111,12 +100,12 @@ exports.handler = async (event, context) => {
 
     // Use Gemini Flash for speed and cost-efficiency
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: process.env.GEMINI_MODEL || "gemini-1.5-flash",
       systemInstruction: selectedInstructionPrompt,
     });
 
     // Build conversation history in Gemini format
-    const formattedHistory = history.map(turn => ({
+    const formattedHistory = history.map((turn) => ({
       role: turn.role, // "user" or "model"
       parts: [{ text: turn.text }],
     }));
@@ -130,21 +119,20 @@ exports.handler = async (event, context) => {
     const result = await chat.sendMessage(message.trim());
     const aiResponse = result.response.text();
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
+    return buildJsonResponse(
+      200,
+      {
         success: true,
         reply: aiResponse,
-      }),
-    };
-
+      },
+      headers,
+    );
   } catch (error) {
     console.error("Gemini AI API Error:", error);
-    return {
-      statusCode: 500,
+    return buildJsonResponse(
+      500,
+      { message: "The AI estimator encountered an error. Please try again." },
       headers,
-      body: JSON.stringify({ message: 'The AI estimator encountered an error. Please try again.' }),
-    };
+    );
   }
 };

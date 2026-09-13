@@ -1,35 +1,17 @@
-const { createClient } = require("@supabase/supabase-js");
-
-// Initialize Supabase Client
-// SUPABASE_URL and SUPABASE_SECRET_KEY are set securely in Netlify
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+const { getSupabaseClient } = require("./utils/supabaseClient");
+const { buildJsonResponse, getPublicCorsHeaders } = require("./utils/response");
 
 exports.handler = async (event, context) => {
-  // Setup CORS headers to allow modern frontend AJAX requests
-  const headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Content-Type": "application/json",
-  };
+  const headers = getPublicCorsHeaders("POST, OPTIONS");
 
   // Handle preflight CORS request
   if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ message: "CORS Preflight Success" }),
-    };
+    return buildJsonResponse(200, { message: "CORS Preflight Success" }, headers);
   }
 
   // Only accept POST requests
   if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ message: "Method Not Allowed" }),
-    };
+    return buildJsonResponse(405, { message: "Method Not Allowed" }, headers);
   }
 
   // Parse incoming JSON body
@@ -37,27 +19,19 @@ exports.handler = async (event, context) => {
   try {
     body = JSON.parse(event.body);
   } catch (err) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ message: "Invalid JSON request body" }),
-    };
+    return buildJsonResponse(400, { message: "Invalid JSON request body" }, headers);
   }
 
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({ message: "Request body must be an object" }),
-    };
+    return buildJsonResponse(400, { message: "Request body must be an object" }, headers);
   }
 
   if (Object.prototype.hasOwnProperty.call(body, "status")) {
-    return {
-      statusCode: 400,
+    return buildJsonResponse(
+      400,
+      { message: "Lead status is assigned by the server" },
       headers,
-      body: JSON.stringify({ message: "Lead status is assigned by the server" }),
-    };
+    );
   }
 
   // Destructure the public fields explicitly allowed into a lead record.
@@ -74,41 +48,37 @@ exports.handler = async (event, context) => {
     ai_estimation,
   } = body;
 
-  // Validate required fields (following our strict PRD specification)
+  // Validate required fields (following strict PRD specification)
   const requiredFields = { name, phone, location, product_line, message };
   if (
     Object.values(requiredFields).some(
       (value) => typeof value !== "string" || !value.trim(),
     )
   ) {
-    return {
-      statusCode: 400,
-      headers,
-      body: JSON.stringify({
+    return buildJsonResponse(
+      400,
+      {
         message:
           "Validation Failed: name, phone, location, product_line, and message are required.",
-      }),
-    };
+      },
+      headers,
+    );
   }
 
-  // Check database configuration
-  if (!supabaseUrl || !supabaseSecretKey) {
+  // Initialize Supabase Client
+  const supabase = getSupabaseClient();
+  if (!supabase) {
     console.error(
       "Configuration Error: Supabase credentials missing in Environment Variables!",
     );
-    return {
-      statusCode: 500,
+    return buildJsonResponse(
+      500,
+      { message: "Server database configuration is missing." },
       headers,
-      body: JSON.stringify({
-        message: "Server database configuration is missing.",
-      }),
-    };
+    );
   }
 
   try {
-    // Create Supabase Client with service key to securely bypass RLS policies
-    const supabase = createClient(supabaseUrl, supabaseSecretKey);
-
     // Insert lead into Supabase PostgreSQL database
     const { data, error } = await supabase
       .from("leads")
@@ -134,24 +104,21 @@ exports.handler = async (event, context) => {
 
     if (error) throw error;
 
-    // Send successful response with the created lead details
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
+    return buildJsonResponse(
+      200,
+      {
         success: true,
         message: "Lead captured successfully",
         lead: data[0],
-      }),
-    };
+      },
+      headers,
+    );
   } catch (error) {
     console.error("Error writing lead record to Supabase:", error);
-    return {
-      statusCode: 500,
+    return buildJsonResponse(
+      500,
+      { message: "Internal Server Error while saving lead." },
       headers,
-      body: JSON.stringify({
-        message: "Internal Server Error while saving lead.",
-      }),
-    };
+    );
   }
 };
