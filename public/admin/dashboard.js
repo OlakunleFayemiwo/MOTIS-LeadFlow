@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalStatusSelect = document.getElementById("modal-statusSelect");
   const saveStatusBtn = document.getElementById("saveStatusBtn");
   const copilotDraftArea = document.getElementById("copilotDraftArea");
+  const copilotSections = document.getElementById("copilotSections");
+  const generateCoPilotBtn = document.getElementById("generateCoPilotBtn");
   const copyDraftBtn = document.getElementById("copyDraftBtn");
 
   // Chemical Workslip Modal Elements
@@ -41,7 +43,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const workslipLocation = document.getElementById("workslip-location");
   const workslipProduct = document.getElementById("workslip-product");
   const workslipVolume = document.getElementById("workslip-volume");
-  const workslipFormulaBody = document.getElementById("workslipFormulaBody");
 
   // Global State
   let currentLeads = [];
@@ -174,18 +175,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const total = currentLeads.length;
     const won = currentLeads.filter((l) => l.status === "won");
 
-    // Dynamic Revenue Math (e.g. 1 drum = N150,000, 1 tin = N35,000)
+    // ILLUSTRATIVE DEMO FIGURES ONLY — not verified MOTIS pricing.
+    // The per-drum/per-tin values and the partner commission percentage
+    // below are demo assumptions and must not be treated as real MOTIS
+    // business intelligence. UI labels mark them as illustrative.
+    const DEMO_DRUM_VALUE = 150000;
+    const DEMO_TIN_VALUE = 35000;
     let estRevenue = 0;
     won.forEach((lead) => {
       const qtyStr = String(lead.quantity || "").toLowerCase();
       const qtyNum = parseInt(qtyStr.match(/\d+/) || [50]); // default to 50 if unspecified
       if (qtyStr.includes("drum")) {
-        estRevenue += qtyNum * 150000;
+        estRevenue += qtyNum * DEMO_DRUM_VALUE;
       } else if (qtyStr.includes("tin")) {
-        estRevenue += qtyNum * 35000;
+        estRevenue += qtyNum * DEMO_TIN_VALUE;
       } else {
-        // generic wholesale bulk estimate (N150,000 per drum equivalent)
-        estRevenue += qtyNum * 150000;
+        // generic wholesale bulk estimate (demo drum-equivalent assumption)
+        estRevenue += qtyNum * DEMO_DRUM_VALUE;
       }
     });
 
@@ -233,7 +239,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const boardContainer = document.getElementById("leaderboardContainer");
     boardContainer.innerHTML = "";
 
-    // Compile referrers metrics
+    // Compile referrer metrics. The commission figure is an ILLUSTRATIVE
+    // demo assumption (10% of an assumed order value) — not verified
+    // MOTIS business data.
+    const ILLUSTRATIVE_COMMISSION_RATE = 0.1;
     const partnerMap = {};
     currentLeads.forEach((lead) => {
       if (!lead.referrer_id) return;
@@ -249,13 +258,13 @@ document.addEventListener("DOMContentLoaded", () => {
       partnerMap[ref].totalLeads += 1;
       if (lead.status === "won") {
         partnerMap[ref].wonLeads += 1;
-        // Calculate estimated partner commission (10% commission on bulk sales value)
+        // Illustrative demo commission calculation (assumed order value)
         const qtyStr = String(lead.quantity || "").toLowerCase();
         const qtyNum = parseInt(qtyStr.match(/\d+/) || [50]);
         const baseVal = qtyStr.includes("tin")
           ? qtyNum * 35000
           : qtyNum * 150000;
-        partnerMap[ref].commission += Math.round(baseVal * 0.1); // 10% cut
+        partnerMap[ref].commission += Math.round(baseVal * ILLUSTRATIVE_COMMISSION_RATE); // demo 10% assumption
       }
     });
 
@@ -285,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 <div class="text-right">
                     <span class="font-heading font-bold text-xs text-motis-orange block">₦${partner.commission.toLocaleString("en-NG")}</span>
-                    <span class="text-[9px] uppercase tracking-wider text-slate-600 block">Est. Commission Paid</span>
+                    <span class="text-[9px] uppercase tracking-wider text-slate-600 block">Commission (Illustrative Demo)</span>
                 </div>`;
       boardContainer.appendChild(row);
     });
@@ -362,7 +371,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- VIEW 3: CHEMICAL FACTORY FLOOR ---
+  // --- VIEW 3: FULFILLMENT REVIEW ---
+  // A won lead is a sales outcome only. This view lists won leads for
+  // neutral fulfillment review; it must never read as, or trigger,
+  // production authorization, and no technical formulas are derived
+  // from sales data here.
   function renderProductionFloor() {
     productionTableBody.innerHTML = "";
     productionEmptyState.classList.add("hidden-section");
@@ -375,14 +388,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     wonLeads.forEach((lead, idx) => {
-      const orderNum = `BATCH-#M${String(1000 + idx)}`;
+      const orderNum = `REF-#${String(1000 + idx)}`;
       const productBase = escapeHtml(
-        (lead.product_line || "Standard Paint")
+        (lead.product_line || "As requested by customer")
           .replace("more_paint_", "")
           .replace("motis_", "")
           .replace("-", " "),
       );
-      const volumeStr = escapeHtml(lead.quantity || "50 Drums (Default)");
+      const volumeStr = escapeHtml(lead.quantity || "Not specified");
 
       const tr = document.createElement("tr");
       tr.className =
@@ -394,8 +407,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td class="px-6 py-4 text-xs text-slate-400">${escapeHtml(lead.location || "N/A")}</td>
                 <td class="px-6 py-4 text-right">
                     <button onclick="openWorkslipModal('${lead.id}', '${orderNum}')" class="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-4 py-2 border border-slate-700 rounded-sm transition-colors flex items-center justify-center space-x-2 inline-block">
-                        <span class="material-symbols-outlined text-xs">print</span>
-                        <span>Chemical Ticket</span>
+                        <span class="material-symbols-outlined text-xs">fact_check</span>
+                        <span>Review Summary</span>
                     </button>
                 </td>`;
       productionTableBody.appendChild(tr);
@@ -409,6 +422,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Reset copilot draft
     copilotDraftArea.value = "";
+    copilotSections.classList.add("hidden-section");
+    copilotSections.innerHTML = "";
 
     // Populate detail views
     modalName.textContent = escapeHtml(selectedLead.name);
@@ -493,87 +508,76 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- AI CO-PILOT DRAFT GENERATOR ---
-  window.generateCoPilotDraft = function (platform) {
+  // --- AI CO-PILOT LEAD REVIEW (real Gemini inference, operator in control) ---
+  const copilotSectionLabels = {
+    lead_summary: "Lead Summary",
+    customer_intent: "Customer Intent",
+    missing_information: "Missing Information / Clarification Questions",
+    qualification_observations: "Qualification Observations",
+  };
+
+  function renderCoPilotSections(coPilot) {
+    copilotSections.innerHTML = "";
+    Object.entries(copilotSectionLabels).forEach(([key, label]) => {
+      const block = document.createElement("div");
+      block.className =
+        "bg-slate-950/50 border border-white/5 rounded-sm p-3";
+      block.innerHTML = `
+                <span class="text-[10px] font-semibold tracking-wider text-motis-orange uppercase block mb-1">${escapeHtml(label)}</span>
+                <p class="text-slate-300 whitespace-pre-wrap"></p>`;
+      // Text content only — never inject AI output as raw HTML.
+      block.querySelector("p").textContent = coPilot[key] || "";
+      copilotSections.appendChild(block);
+    });
+    copilotSections.classList.remove("hidden-section");
+  }
+
+  window.generateCoPilotDraft = async function () {
     if (!selectedLead) return;
 
-    copilotDraftArea.value = `Drafting response protocol... please wait...`;
+    copilotSections.classList.add("hidden-section");
+    copilotSections.innerHTML = "";
+    copilotDraftArea.value = "Analyzing lead with AI Co-Pilot... please wait...";
+    generateCoPilotBtn.disabled = true;
 
-    // Mock Gemini response compilation logic (highly structured and custom tailored)
-    const name = selectedLead.name;
-    const product = escapeHtml(
-      (selectedLead.product_line || "Paint")
-        .replace("more_paint_", "")
-        .replace("motis_", "")
-        .replace("-", " "),
-    );
-    const quantity = selectedLead.quantity || "wholesale quantity";
-    const location = selectedLead.location || "Nigeria";
+    try {
+      const response = await fetch("/.netlify/functions/crmCoPilot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ leadId: selectedLead.id }),
+      });
 
-    let draft = "";
-
-    if (platform === "whatsapp") {
-      draft = `*MOTIS INDUSTRIES LIMITED - WHITESHEET ESTIMATION*\n\n`;
-      draft += `Dear *${name}*,\n\n`;
-      draft += `Thank you for consulting Motis Industries for your architectural project. Our Lead Chemist has compiled the technical specs for your *${product}* request.\n\n`;
-      draft += `📍 *Delivery Location:* ${location}\n`;
-      draft += `📦 *Formulation Volume:* ${quantity}\n\n`;
-
-      // Coastal zone addition
-      const locLower = location.toLowerCase();
-      const isCoastalZone =
-        locLower.includes("coast") ||
-        locLower.includes("island") ||
-        locLower.includes("lekki") ||
-        locLower.includes("vi") ||
-        locLower.includes("lagos") ||
-        locLower.includes("port") ||
-        locLower.includes("humid") ||
-        locLower.includes("marsh");
-
-      if (isCoastalZone) {
-        draft += `⚠️ *Coastal Moisture Advisory:* Our records show your project site is in a coastal zone. We strongly recommend applying 1 coat of *Contractor Prep Undercoat* to block salt-water condensation before applying topcoats.\n\n`;
+      if (response.status === 401) {
+        copilotDraftArea.value = "";
+        closeLeadModal();
+        showLogin();
+        return;
       }
 
-      draft += `Our dispatch team is currently scheduling raw materials from dispersion room. Let us know if you'd like to lock in this wholesale batch. We can forward the official invoice shortly!\n\n`;
-      draft += `Regards,\n*Motis Enterprise Sales team*`;
-    } else {
-      // Email Draft
-      draft = `Subject: SUPPLY PROTOCOL: Motis Wholly-Formulated Architectural Coatings Estimate for ${name}\n\n`;
-      draft += `Dear ${name},\n\n`;
-      draft += `I hope this email finds you well.\n\n`;
-      draft += `This is a formal communication from Motis Industries Limited regarding your wholesale quote request for our flagship architectural/industrial paint: ${product}.\n\n`;
-      draft += `Our factory dispersion team has reviewed your project specifications. Based on your target volume of ${quantity} and deployment site in ${location}, we have reserved the raw polymers in our central ledger.\n\n`;
-
-      const locLower = location.toLowerCase();
-      const isCoastalZone =
-        locLower.includes("coast") ||
-        locLower.includes("island") ||
-        locLower.includes("lekki") ||
-        locLower.includes("vi") ||
-        locLower.includes("lagos") ||
-        locLower.includes("port") ||
-        locLower.includes("humid") ||
-        locLower.includes("marsh");
-
-      if (isCoastalZone) {
-        draft += `TECHNICAL NOTICE: Since your site is situated in a high-salinity coastal zone, our Lead Chemist recommends combining the exterior coating with our custom-engineered high-cross-linking primer to prevent future peeling or carbonation damage.\n\n`;
+      const result = await response.json();
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "AI Co-Pilot request failed");
       }
 
-      draft += `Please review and acknowledge if you would like to proceed with payment and logistics allocation. Our representative will follow up via phone shortly.\n\n`;
-      draft += `Sincerely,\n\n`;
-      draft += `Motis Enterprise Sales & Logistics\n`;
-      draft += `Motis Industries Limited\n`;
-      draft += `Website: https://www.motisindustries.com`;
+      const coPilot = result.coPilot || {};
+      renderCoPilotSections(coPilot);
+      copilotDraftArea.value =
+        coPilot.suggested_response_draft ||
+        "No draft was produced. Please try again.";
+    } catch (error) {
+      console.error("AI Co-Pilot failed:", error);
+      copilotSections.classList.add("hidden-section");
+      copilotDraftArea.value = "";
+      alert("AI Co-Pilot could not complete the review. Please try again.");
+    } finally {
+      generateCoPilotBtn.disabled = false;
     }
-
-    copilotDraftArea.value = draft;
   };
 
   // Copy draft helper
   copyDraftBtn.addEventListener("click", () => {
     const text = copilotDraftArea.value;
-    if (!text || text.startsWith("Drafting")) return;
+    if (!text || text.startsWith("Analyzing")) return;
     navigator.clipboard.writeText(text);
     copyDraftBtn.querySelector("span:last-child").textContent = "Copied!";
     setTimeout(() => {
@@ -581,7 +585,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 2000);
   });
 
-  // --- CHEMICAL WORKSIP HANDLERS ---
+  // --- FULFILLMENT REVIEW SUMMARY HANDLERS ---
+  // Neutral sales-conversion summary only. No technical formulas,
+  // blending ratios, or production instructions are derived from sales
+  // leads; the modal states that production authorization is separate.
   window.openWorkslipModal = function (leadId, orderNo) {
     const lead = currentLeads.find((l) => String(l.id) === String(leadId));
     if (!lead) return;
@@ -589,56 +596,17 @@ document.addEventListener("DOMContentLoaded", () => {
     workslipId.textContent = orderNo;
     workslipClient.textContent = escapeHtml(lead.name);
     workslipLocation.textContent = escapeHtml(
-      lead.location || "Lagos, Nigeria",
+      lead.location || "Not provided",
     );
 
     const productName = escapeHtml(
-      (lead.product_line || "Standard Paint")
+      (lead.product_line || "Not specified")
         .replace("more_paint_", "")
         .replace("motis_", "")
         .replace("-", " "),
     );
     workslipProduct.textContent = productName.toUpperCase();
-
-    // Calculate volumes
-    const qtyStr = String(lead.quantity || "").toLowerCase();
-    let qtyNum = parseInt(qtyStr.match(/\d+/) || [50]);
-    let totalLitres = qtyStr.includes("tin") ? qtyNum * 4 : qtyNum * 20;
-
-    workslipVolume.textContent = `${qtyNum} ${qtyStr.includes("tin") ? "Tins" : "Drums"} (~${totalLitres.toLocaleString()} Litres)`;
-
-    // Chemistry Blending Ratios (Unilever Scale Custom Formulas!)
-    // 1. Base resin (70%)
-    // 2. Pigment Titanium Dioxide (15%)
-    // 3. Coalescents & Solvents (10%)
-    // 4. Anti-humidity Polymer binders (5%)
-    const constituentBase = totalLitres * 0.7;
-    const constituentPigment = totalLitres * 0.15 * 1.4; // Pigments measured in kg equivalent (standard density ~1.4)
-    const constituentSolvent = totalLitres * 0.1;
-    const constituentAdhesion = totalLitres * 0.05;
-
-    workslipFormulaBody.innerHTML = `
-            <tr>
-                <td class="p-2 font-bold text-slate-800 uppercase text-xs">Acrylic Copolymer / Epoxy Resin Base</td>
-                <td class="p-2 text-slate-600 text-xs">70%</td>
-                <td class="p-2 text-slate-900 font-bold text-xs text-right">${constituentBase.toLocaleString()} L</td>
-            </tr>
-            <tr>
-                <td class="p-2 font-bold text-slate-800 uppercase text-xs">Titanium Dioxide White (TiO2) / Pigments</td>
-                <td class="p-2 text-slate-600 text-xs">15%</td>
-                <td class="p-2 text-slate-900 font-bold text-xs text-right">${constituentPigment.toLocaleString()} KG</td>
-            </tr>
-            <tr>
-                <td class="p-2 font-bold text-slate-800 uppercase text-xs">Glycol Coalescents & Carrier Solvents</td>
-                <td class="p-2 text-slate-600 text-xs">10%</td>
-                <td class="p-2 text-slate-900 font-bold text-xs text-right">${constituentSolvent.toLocaleString()} L</td>
-            </tr>
-            <tr>
-                <td class="p-2 font-bold text-slate-800 uppercase text-xs">Anti-humidity Cross-linking Binder / Preservatives</td>
-                <td class="p-2 text-slate-600 text-xs">5%</td>
-                <td class="p-2 text-slate-900 font-bold text-xs text-right">${constituentAdhesion.toLocaleString()} L</td>
-            </tr>
-        `;
+    workslipVolume.textContent = lead.quantity || "Not specified";
 
     workslipModal.classList.remove("opacity-0", "pointer-events-none");
   };

@@ -334,8 +334,8 @@
                     <span class="material-symbols-outlined text-2xl">science</span>
                 </div>
                 <div>
-                    <h3 class="text-lg font-heading font-bold text-white leading-tight">Chemist AI</h3>
-                    <p class="text-slate-500 text-xs mt-0.5">Motis Technical Estimator</p>
+                    <h3 class="text-lg font-heading font-bold text-white leading-tight">AI Sales & Technical Inquiry Assistant</h3>
+                    <p class="text-slate-500 text-xs mt-0.5">Motis AI Assistant</p>
                 </div>
             </div>
             <button onclick="toggleAiDrawer(false)" class="text-slate-400 hover:text-white p-2 flex items-center justify-center">
@@ -351,9 +351,9 @@
                     <span class="material-symbols-outlined text-lg">science</span>
                 </div>
                 <div class="bg-slate-800/60 border border-white/5 rounded-sm p-4 text-slate-300 text-sm font-light leading-relaxed">
-                    Hello! I am **Chemist AI**, engineered by Motis Industries' development team. 
+                    Hello! I am the **AI Sales & Technical Inquiry Assistant** from Motis Industries.
                     <br /><br />
-                    Tell me about your building project (e.g. room dimensions, exterior walls, high-salinity coastal humidity concerns) and I will calculate standard coverage metrics and provide exact paint product recommendations!
+                    Tell me about your building project (e.g. room dimensions, exterior walls, coastal humidity concerns) and I can provide indicative coverage estimates and product suggestions to discuss with our sales team!
                 </div>
             </div>
         </div>
@@ -361,7 +361,7 @@
         <!-- Chat Input -->
         <div class="p-6 bg-motis-dark/85 border-t border-white/10 shrink-0">
             <form id="chatForm" class="flex space-x-3">
-                <input class="flex-grow rounded-sm border-white/10 bg-motis-dark text-white focus:border-motis-orange focus:ring-motis-orange px-4 py-3 text-sm" placeholder="Ask Chemist AI (e.g. 3-bedroom interior size)..." id="chatInput" required type="text" />
+                <input class="flex-grow rounded-sm border-white/10 bg-motis-dark text-white focus:border-motis-orange focus:ring-motis-orange px-4 py-3 text-sm" placeholder="Ask the AI Assistant (e.g. 3-bedroom interior size)..." id="chatInput" required type="text" />
                 <button class="bg-motis-orange text-white p-3 rounded-sm hover:bg-motis-orange-hover transition-colors flex items-center justify-center shadow-sm" type="submit">
                     <span class="material-symbols-outlined">send</span>
                 </button>
@@ -434,6 +434,10 @@
                     <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">Eco-System / VOC Rating</span>
                     <div class="text-white font-semibold" id="detail-voc">VOC</div>
                 </div>
+
+                <div class="bg-motis-dark/60 border border-white/5 rounded-sm p-3">
+                    <p class="text-slate-400 text-xs font-light leading-relaxed">The technical values above are indicative marketing descriptions only. Exact coverage, drying times, VOC ratings, and product specifications must be confirmed with a Motis sales representative before purchase or application.</p>
+                </div>
             </div>
 
             <!-- Footer actions -->
@@ -443,7 +447,7 @@
                 </button>
                 <button onclick="consultChemistFromCatalog()" class="flex-grow bg-motis-orange hover:bg-motis-orange-hover text-white font-semibold py-3 px-6 rounded-sm transition-colors flex items-center justify-center space-x-2 text-sm shadow-md">
                     <span class="material-symbols-outlined text-base">psychology</span>
-                    <span>Consult Chemist AI</span>
+                    <span>Consult AI Assistant</span>
                 </button>
             </div>
         </div>
@@ -546,7 +550,7 @@
             });
 
             // =============================================================
-            // --- CHEMIST AI CHAT ENGINE ---
+            // --- AI SALES & TECHNICAL INQUIRY ASSISTANT CHAT ENGINE ---
             // =============================================================
             const chatForm = document.getElementById('chatForm');
             const chatInput = document.getElementById('chatInput');
@@ -557,8 +561,19 @@
             let conversationHistory = [];
 
             // --- Helper: Render a simple subset of Markdown to HTML ---
+            // Escape raw HTML from AI output BEFORE applying markdown
+            // transforms, so model text can never inject markup.
+            function escapeModelHtml(unsafe) {
+                return String(unsafe || "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
             function renderMarkdown(text) {
-                return text
+                return escapeModelHtml(text)
                     // Bold: **text**
                     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
                     // Table rows: | col | col |
@@ -636,9 +651,9 @@
                 chatInput.disabled = true;
 
                 // Show user message in chat
-                appendMessage('user', userMessage);
+                appendMessage('user', escapeModelHtml(userMessage));
 
-                // Show Chemist AI typing indicator
+                // Show AI assistant typing indicator
                 showTypingIndicator();
 
                 try {
@@ -669,7 +684,7 @@
                         ctaBtn.addEventListener('click', () => {
                             const configuredPhone = window.MOTIS_CONFIG?.whatsappPhone;
                             if (configuredPhone && /^\+?[0-9]{7,15}$/.test(configuredPhone)) {
-                                const waText = encodeURIComponent(`Hello Motis Industries! I got the following estimate from your AI Chemist:\n\n${aiText}\n\nI'd like to proceed with a formal quote.`);
+                                const waText = encodeURIComponent(`Hello Motis Industries! I got the following estimate from your AI Sales & Technical Inquiry Assistant:\n\n${aiText}\n\nI'd like to proceed with a formal quote.`);
                                 window.open(`https://wa.me/${configuredPhone.replace('+', '')}?text=${waText}`, '_blank');
                             } else {
                                 // Fallback: Scroll to lead capture form and pre-fill message box
@@ -700,8 +715,8 @@
 
                 } catch (error) {
                     removeTypingIndicator();
-                    console.error('Chemist AI Error:', error);
-                    appendMessage('model', '⚠️ Chemist AI is temporarily offline. Please try again or contact our sales team directly via WhatsApp.');
+                    console.error('AI Assistant Error:', error);
+                    appendMessage('model', '⚠️ The AI Sales & Technical Inquiry Assistant is temporarily offline. Please try again or contact our sales team directly via WhatsApp.');
                 } finally {
                     chatInput.disabled = false;
                     chatInput.focus();
