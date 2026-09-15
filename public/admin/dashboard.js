@@ -49,6 +49,34 @@ document.addEventListener("DOMContentLoaded", () => {
   let selectedLead = null;
   let currentActiveRole = "admin"; // 'admin' | 'sales' | 'production'
 
+  // --- Toast notifications (non-blocking replacement for alert()) ---
+  let activeToastTimer = null;
+  function showToast(message, type = "info") {
+    const container = document.getElementById("toastContainer");
+    if (!container) return;
+
+    container.innerHTML = "";
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.setAttribute("role", "status");
+    const icon = document.createElement("span");
+    icon.className = "material-symbols-outlined text-base shrink-0";
+    icon.textContent = type === "error" ? "error_outline" : "check_circle";
+    icon.style.color = type === "error" ? "#ef4444" : "#22c55e";
+    const text = document.createElement("span");
+    text.textContent = message;
+    toast.appendChild(icon);
+    toast.appendChild(text);
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("toast-visible"));
+    if (activeToastTimer) clearTimeout(activeToastTimer);
+    activeToastTimer = setTimeout(() => {
+      toast.classList.remove("toast-visible");
+      setTimeout(() => toast.remove(), 250);
+    }, 4000);
+  }
+
   // --- Authentication ---
   async function checkAuth() {
     showLogin();
@@ -364,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </td>
                 <td class="px-6 py-4 text-right">
                     <button onclick="openLeadModal('${lead.id}')" class="bg-motis-slate hover:bg-slate-800 text-white text-xs font-semibold px-3.5 py-2 rounded-sm border border-white/5 transition-colors">
-                        Protocol Spec
+                        View Lead
                     </button>
                 </td>`;
       salesTableBody.appendChild(tr);
@@ -438,8 +466,8 @@ document.addEventListener("DOMContentLoaded", () => {
         .replace("-", " "),
     );
     modalQuantity.textContent = selectedLead.quantity
-      ? `Quantity Ordered: ${selectedLead.quantity}`
-      : "Quantity: Unspecified Wholesale";
+      ? `Quantity requested: ${selectedLead.quantity}`
+      : "Quantity requested: not specified";
     modalMessage.textContent = escapeHtml(
       selectedLead.message || "No specific project message.",
     );
@@ -482,7 +510,7 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           leadId: selectedLead.id,
           status: targetStatus,
-          admin_notes: `Status updated to ${targetStatus} via Enterprise CRM.`,
+          admin_notes: `Status updated to ${targetStatus}.`,
         }),
       });
 
@@ -493,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       if (response.ok && result.success) {
-        alert("Protocol Ledger Updated Successfully!");
+        showToast("Lead updated successfully.", "success");
         closeLeadModal();
         fetchLeads(); // Sync database
       } else {
@@ -501,7 +529,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     } catch (error) {
       console.error("CRM Update failed:", error);
-      alert("Ledger update failed. Check your sync connection.");
+      showToast("Unable to update lead. Please try again.", "error");
     } finally {
       saveStatusBtn.textContent = "Save";
       saveStatusBtn.disabled = false;
@@ -568,7 +596,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("AI Co-Pilot failed:", error);
       copilotSections.classList.add("hidden-section");
       copilotDraftArea.value = "";
-      alert("AI Co-Pilot could not complete the review. Please try again.");
+      showToast("The AI Co-Pilot could not complete the review. Please try again.", "error");
     } finally {
       generateCoPilotBtn.disabled = false;
     }

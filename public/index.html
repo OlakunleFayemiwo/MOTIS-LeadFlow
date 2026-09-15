@@ -57,6 +57,14 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
+        /* AI chat drawer panel — near-opaque for readability */
+        .glass-panel {
+            background: rgba(11, 15, 25, 0.97);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
         /* Antigravity Animation Delays */
         .delay-100 {
             animation-delay: 100ms !important;
@@ -344,7 +352,7 @@
                         <span>Industrial Coatings</span>
                         <span class="material-symbols-outlined text-sm text-slate-500 group-hover:text-motis-orange">open_in_new</span>
                     </h3>
-                    <p class="text-slate-400 font-light leading-relaxed">High-performance protective coatings. Click to view ASTM and ISO chemical barrier specifications.</p>
+                    <p class="text-slate-400 font-light leading-relaxed">High-performance protective coatings for demanding industrial environments. Click to view product details.</p>
                 </div>
                 <!-- Card 3 -->
                 <div onclick="openB2BSpecModal('construction')"
@@ -459,9 +467,9 @@
                         class="font-heading text-4xl md:text-6xl text-white font-black mb-8 tracking-tight reveal-on-scroll delay-200">
                         Engineered to Endure.</h2>
                     <p class="text-xl text-slate-400 font-light mb-10 leading-relaxed reveal-on-scroll delay-300">
-                        More Paint isn't just color—it is an impenetrable architectural barrier. Designed for
-                        uncompromising commercial durability and residential elegance, our flagship line is
-                        weather-responsive and structurally resilient.
+                        More Paint isn't just color—it is a durable architectural coating range. Designed for
+                        commercial durability and residential elegance, our flagship line is made for Nigerian
+                        weather conditions.
                     </p>
                     <ul class="space-y-6 mb-12">
                         <li class="flex items-center reveal-on-scroll delay-400">
@@ -514,10 +522,10 @@
                 <div class="text-center mb-12">
                     <h2
                         class="font-heading text-4xl text-white font-bold mb-4 tracking-tight reveal-on-scroll delay-100">
-                        Initiate Supply Protocol</h2>
+                        Request a Quote</h2>
                     <p class="text-slate-400 text-lg font-light reveal-on-scroll delay-200">
-                        Submit your architectural or industrial specifications. Our execution team will deploy a quote
-                        and availability timeline directly to your inbox.
+                        Tell us about your project requirements. Our sales team will review your enquiry and
+                        respond with availability and pricing.
                     </p>
                 </div>
 
@@ -573,7 +581,7 @@
                                 id="b2bProduct"
                                 class="w-full rounded-sm border-white/10 bg-motis-slate text-white focus:border-motis-orange focus:ring-motis-orange px-5 py-4 transition-colors"
                                 required>
-                                <option disabled selected value="">Select protocol...</option>
+                                <option disabled selected value="">Select a category...</option>
                                 <option value="paints">More Paint / Architectural</option>
                                 <option value="industrial">Heavy Industrial Coatings</option>
                                 <option value="construction">Structural Construction Chemicals</option>
@@ -584,12 +592,12 @@
                         </div>
                         <div class="reveal-on-scroll delay-600">
                             <label
-                                class="block text-xs uppercase tracking-widest font-semibold text-slate-400 mb-3">Volume
-                                Specification</label>
+                                class="block text-xs uppercase tracking-widest font-semibold text-slate-400 mb-3">Quantity
+                                Required</label>
                             <input
                                 id="b2bQuantity"
                                 class="w-full rounded-sm border-white/10 bg-motis-slate text-white focus:border-motis-orange focus:ring-motis-orange px-5 py-4 transition-colors"
-                                placeholder="e.g. 50 Drums" type="text" />
+                                placeholder="e.g. estimated quantity or project size" type="text" />
                         </div>
                     </div>
 
@@ -608,7 +616,7 @@
                             id="b2bSubmitBtn"
                             class="w-full bg-motis-orange text-white font-medium text-lg px-8 py-5 rounded-sm hover:bg-motis-orange-hover transition-colors flex items-center justify-center space-x-3 shadow-lg hover:shadow-motis-orange/20"
                             type="submit">
-                            <span id="b2bSubmitText">Execute Request</span>
+                            <span id="b2bSubmitText">Submit Enquiry</span>
                             <span id="b2bSubmitSpinner" class="material-symbols-outlined animate-spin hidden">hourglass_empty</span>
                             <span id="b2bSubmitIcon" class="material-symbols-outlined">send</span>
                         </button>
@@ -747,10 +755,10 @@
 
                     } catch (error) {
                         console.error("B2B Submission failed:", error);
-                        alert("Submission protocol failed. Check your connection or try again shortly.");
+                        alert("Something went wrong while submitting your enquiry. Please check your connection and try again.");
                     } finally {
                         // Reset button state
-                        b2bSubmitText.textContent = 'Execute Request';
+                        b2bSubmitText.textContent = 'Submit Enquiry';
                         b2bSubmitSpinner.classList.add('hidden');
                         b2bSubmitIcon.classList.remove('hidden');
                     }
@@ -874,17 +882,17 @@
                         // Add WhatsApp referral CTA
                         const ctaBtn = document.createElement('button');
                         ctaBtn.className = 'mt-4 w-full flex items-center justify-center space-x-2 bg-green-700/30 hover:bg-green-700/50 border border-green-700/40 text-green-400 text-xs font-semibold px-4 py-2.5 rounded-sm transition-colors';
-                        ctaBtn.innerHTML = '<span class="material-symbols-outlined text-base">chat</span><span>Forward Specs to WhatsApp Sales Liaison</span>';
+                        ctaBtn.innerHTML = '<span class="material-symbols-outlined text-base">chat</span><span>Send Summary via WhatsApp</span>';
                         ctaBtn.addEventListener('click', () => {
                             const configuredPhone = window.MOTIS_CONFIG?.whatsappPhone;
                             if (configuredPhone && /^\+?[0-9]{7,15}$/.test(configuredPhone)) {
-                                const waText = encodeURIComponent(`Hello Motis sales team! I compiled this inquiry summary using your AI Sales & Technical Inquiry Assistant:\n\n${aiText}\n\nI would like to initiate B2B supply protocols.`);
+                                const waText = encodeURIComponent(`Hello Motis sales team! I compiled this inquiry summary using your AI Sales & Technical Inquiry Assistant:\n\n${aiText}\n\nI would like to discuss a quotation.`);
                                 window.open(`https://wa.me/${configuredPhone.replace('+', '')}?text=${waText}`, '_blank');
                             } else {
-                                // Fallback: Scroll to B2B Lead Form and pre-fill message
+                                // Fallback: guide the user to the enquiry form. The Project
+                                // Specifications field is left unchanged.
                                 const b2bMsgBox = document.getElementById('b2bMessage');
                                 if (b2bMsgBox) {
-                                    b2bMsgBox.value = `[AI Spec Summary]\n${aiText}\n\n[End Spec Summary]`;
                                     b2bMsgBox.scrollIntoView({ behavior: 'smooth' });
                                     b2bMsgBox.focus();
                                 }
@@ -905,7 +913,7 @@
                 } catch (error) {
                     removeB2BTypingIndicator();
                     console.error('B2B AI Error:', error);
-                    appendB2BMessage('model', '⚠️ The AI Sales & Technical Inquiry Assistant is currently offline. Please deploy your quote inquiry using the Supply Protocol form below.');
+                    appendB2BMessage('model', '⚠️ The AI assistant is currently offline. Please submit your enquiry using the form below.');
                 } finally {
                     b2bChatInput.disabled = false;
                     b2bChatInput.focus();
@@ -927,38 +935,38 @@
             const b2bSpecDetails = {
                 coatings: {
                     title: "Industrial Coatings & Barriers",
-                    desc: "High-performance protective coatings engineered to shield steel structures, maritime vessels, and chemical storage facilities. Formulated to withstand extremely corrosive salty coastal air and heavy atmospheric carbonation.",
+                    desc: "High-performance protective coatings for steel structures, marine environments, and chemical storage facilities. Suited to harsh coastal and industrial conditions.",
                     compound: "Dual-Pack Polyamine-Cured Epoxies & Aliphatic Polyurethanes",
                     industries: "Oil & Gas, Offshore Marine, Public Infrastructure, Heavy Manufacturing",
-                    standards: "ISO 12944 (C5-M Highly Corrosive Category), ASTM D4060 Abrasion Resistance"
+                    standards: "Technical and standards-compliance documentation available on request"
                 },
                 construction: {
                     title: "Construction Chemicals & Admixtures",
-                    desc: "Advanced waterproofing agents, structural bonding grouts, and concrete admixtures. Formulated to accelerate curing speeds, enhance mechanical compression bounds, and prevent drying shrinkage cracks in hot tropical climates.",
+                    desc: "Waterproofing agents, structural bonding grouts, and concrete admixtures for construction projects in tropical climates. Technical data available on request.",
                     compound: "Polycarboxylate Ether (PCE) Superplasticizers & Liquid Crystalline Membranes",
                     industries: "High-Rise Commercial Concrete Foundations, Road Works, Bridges, Wastewater Plants",
-                    standards: "ASTM C494 (Type F High Range Admixtures), BS EN 934-2 Construction Admixtures"
+                    standards: "Technical and standards-compliance documentation available on request"
                 },
                 hygiene: {
                     title: "Corporate Hygiene & Sterilizers",
-                    desc: "Industrial-strength biocides, sanitizers, and surfactants tailored for enterprise disinfection protocols. Highly dilutable formulas that eliminate 99.999% of pathogenetic strains while maintaining surface chemical integrity.",
+                    desc: "Industrial-strength biocides, sanitizers, and surfactants designed for high-dilution commercial and institutional disinfection programmes. Formulation and efficacy details are available on request.",
                     compound: "Quaternary Ammonium Compounds (QAC) & High-Dilution Sodium Hypochlorites",
                     industries: "Hospitality Franchises, Private Medical Facilities, Commercial High-Rise Offices",
-                    standards: "WHO/CDC Sterilization Protocols, NAFDAC Registered & Cleared"
+                    standards: "Regulatory and compliance documentation available on request"
                 },
                 adhesives: {
                     title: "Structural Adhesives & Sealants",
-                    desc: "High-tensile architectural bonding agents. Engineered to maintain absolute seals and high flexibility in heavy building facades under intense structural oscillations and high-velocity wind loads.",
+                    desc: "Architectural bonding agents and sealants for demanding facade, glazing, and expansion-joint applications. Technical data available on request.",
                     compound: "Advanced Facade Structural Silicones & Polyurethane Sealants",
                     industries: "Architectural Curtain Wall Glass, Heavy Vehicle Assemblies, Structural Glazing",
-                    standards: "ISO 11600 Structural Facades, ASTM C920 Joint Sealants"
+                    standards: "Technical and standards-compliance documentation available on request"
                 },
                 specialty: {
                     title: "Specialty Formulations",
                     desc: "Custom-developed chemical binders, fire-retardants, and specialized additives. Formulated directly by our lead research chemist to meet non-standard mechanical and thermal tolerances.",
                     compound: "Custom Co-Polymer Blends & High-Temperature Binders",
                     industries: "Automotive Parts, Chemical Refineries, Defense Infrastructure",
-                    standards: "Individually certified under matching ASTM testing protocols per custom contract"
+                    standards: "Testing and certification documentation provided per custom contract on request"
                 }
             };
 
@@ -990,7 +998,7 @@
 
                 // Open B2B Chat Drawer with preset query
                 toggleB2BAiDrawer(true);
-                const query = `What are the technical certifications, ASTM compliance details, and wholesale lead times for your ${spec.title}?`;
+                const query = `What documentation and compliance details are available for your ${spec.title}, and how do we confirm lead times?`;
                 
                 document.getElementById('b2bChatInput').value = query;
                 document.getElementById('b2bChatForm').dispatchEvent(new Event('submit'));
@@ -1005,12 +1013,12 @@
             <div class="w-20 h-20 bg-motis-dark border border-white/5 text-motis-orange rounded-full flex items-center justify-center mx-auto mb-8">
                 <span class="material-symbols-outlined text-4xl">check_circle</span>
             </div>
-            <h3 class="font-heading text-3xl text-white font-bold mb-4">Protocol Initiated</h3>
+            <h3 class="font-heading text-3xl text-white font-bold mb-4">Enquiry Received</h3>
             <p class="text-slate-400 font-light leading-relaxed mb-8">
-                Your B2B industrial quote request has been securely compiled and recorded in our central enterprise ledger. Our engineering team will review the specifications immediately.
+                Thank you — your enquiry has been received. Our sales team will review your requirements and contact you shortly.
             </p>
             <button id="b2bCloseSuccessBtn" class="w-full bg-motis-orange hover:bg-motis-orange-hover text-white py-4 font-semibold tracking-wide rounded-sm transition-colors uppercase text-sm">
-                Acknowledge Protocol
+                Close
             </button>
         </div>
     </div>
@@ -1067,7 +1075,7 @@
                 </button>
                 <button onclick="consultB2BAiFromCatalog()" class="flex-grow bg-motis-orange hover:bg-motis-orange-hover text-white font-semibold py-3 px-6 rounded-sm transition-colors flex items-center justify-center space-x-2 text-sm shadow-md">
                     <span class="material-symbols-outlined text-base">psychology</span>
-                    <span>Consult B2B AI Engineering</span>
+                    <span>Consult AI Assistant</span>
                 </button>
             </div>
         </div>
@@ -1109,9 +1117,9 @@
                 <div class="bg-slate-800/60 border border-white/5 rounded-sm p-4 text-slate-300 text-sm font-light leading-relaxed">
                     Welcome to the **Motis B2B Technical Consultation**. 
                     <br /><br />
-                    I am the **Technical Director AI**, engineered by Motis. I advise procurement officers and project engineers on structural waterproofing membranes, high-tensile epoxy flooring systems, hygiene compounds, and concrete admixtures.
+                    I am the Motis **AI Sales & Technical Inquiry Assistant**. I can discuss product categories such as waterproofing membranes, epoxy flooring systems, hygiene compounds, and concrete admixtures, and help you prepare an enquiry for our sales team.
                     <br /><br />
-                    What industrial specifications or ASTM compliance metrics do you need compiled today?
+                    What does your project involve? Ask about our product categories or request a quotation.
                 </div>
             </div>
         </div>
