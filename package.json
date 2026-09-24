@@ -4,11 +4,15 @@
   "description": "Motis LeadFlow MVP",
   "main": "index.js",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@google/genai": "^2.22.0",
     "@netlify/blobs": "^7.3.0",
     "@supabase/supabase-js": "^2.43.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
   }
 }
