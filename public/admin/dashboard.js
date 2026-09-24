@@ -335,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- VIEW 2: SALES PIPELINE ---
   function renderSalesPipeline() {
     salesTableBody.innerHTML = "";
+    salesMobileList.innerHTML = "";
     salesEmptyState.classList.add("hidden-section");
 
     if (currentLeads.length === 0) {
@@ -418,6 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // from sales data here.
   function renderProductionFloor() {
     productionTableBody.innerHTML = "";
+    productionMobileList.innerHTML = "";
     productionEmptyState.classList.add("hidden-section");
 
     const wonLeads = currentLeads.filter((l) => l.status === "won");

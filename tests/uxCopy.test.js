@@ -143,3 +143,13 @@ test("CRM uses ordinary operational status language", () => {
   assert.ok(!adminIndex.includes("Supabase Sync Active"));
   assert.ok(!adminIndex.includes("Sync Reviews"));
 });
+
+test("remaining frontend labels stay customer-facing and neutral", () => {
+  assert.ok(!b2bPage.includes("Dismiss Specs"));
+  assert.ok(!b2cPage.includes("Dismiss Specs"));
+  assert.ok(!b2bPage.includes("lead research chemist"));
+  assert.ok(!b2bPage.includes("Launch Flagship Brand Portal"));
+  assert.ok(b2bPage.includes("Close"));
+  assert.ok(b2cPage.includes("Products"));
+  assert.ok(b2cPage.includes("Request a Quote"));
+});
