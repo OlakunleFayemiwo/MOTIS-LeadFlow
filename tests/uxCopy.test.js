@@ -118,3 +118,28 @@ test("CRM includes dedicated mobile lead and fulfillment views", () => {
   assert.ok(dashboard.includes("salesMobileList.appendChild"));
   assert.ok(dashboard.includes("productionMobileList.appendChild"));
 });
+
+test("customer-facing pages avoid theatrical or unsupported business language", () => {
+  for (const stale of [
+    "Launch Flagship Brand Portal",
+    "high-tensile waterproofing specifications",
+    "high-concentration safety certifications",
+    "uncompromising chemical, coating, and industrial solutions",
+    "highest standards of modern infrastructure",
+    "Lead Industrial Chemist",
+    "Consult AI Assistant",
+    "Technical Specification Sheet",
+  ]) {
+    assert.ok(!b2bPage.includes(stale), `index.html still contains: ${stale}`);
+    assert.ok(!b2cPage.includes(stale), `more-paint.html still contains: ${stale}`);
+  }
+  assert.ok(b2bPage.includes("View More Paint Products"));
+  assert.ok(b2bPage.includes("Product Details"));
+  assert.ok(b2cPage.includes("Ask our AI Assistant"));
+});
+test("CRM uses ordinary operational status language", () => {
+  assert.ok(adminIndex.includes("Connected"));
+  assert.ok(adminIndex.includes("Refresh Leads"));
+  assert.ok(!adminIndex.includes("Supabase Sync Active"));
+  assert.ok(!adminIndex.includes("Sync Reviews"));
+});

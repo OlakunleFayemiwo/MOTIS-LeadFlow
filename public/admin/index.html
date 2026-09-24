@@ -181,15 +181,15 @@
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                         </span>
-                        <span>Supabase Sync Active</span>
+                        <span>Connected</span>
                     </div>
                 </div>
             </aside>
 
-            <!-- Dynamic Portal Content Area -->
+            <!-- Dashboard Content Area -->
             <section class="flex-grow flex flex-col p-8 overflow-hidden h-full relative">
                 
-                <!-- PORTAL VIEW 1: ADMIN ANALYTICS & LEADERBOARD -->
+                <!-- Lead Analytics -->
                 <div id="view-admin" class="flex-grow flex flex-col overflow-hidden space-y-8">
                     <!-- Header -->
                     <div class="flex justify-between items-end shrink-0">
@@ -270,7 +270,7 @@
                     </div>
                 </div>
 
-                <!-- PORTAL VIEW 2: SALES PIPELINE -->
+                <!-- Sales Pipeline -->
                 <div id="view-sales" class="flex-grow flex flex-col overflow-hidden space-y-8 hidden-section">
                     <!-- Header -->
                     <div class="flex justify-between items-end shrink-0">
@@ -323,7 +323,7 @@
                     </div>
                 </div>
 
-                <!-- PORTAL VIEW 3: FULFILLMENT REVIEW -->
+                <!-- Fulfillment Review -->
                 <div id="view-production" class="flex-grow flex flex-col overflow-hidden space-y-8 hidden-section">
                     <!-- Header -->
                     <div class="flex justify-between items-end shrink-0">
@@ -333,7 +333,7 @@
                         </div>
                         <button onclick="fetchLeads()" class="bg-motis-slate border border-white/10 text-white px-5 py-2.5 rounded-sm hover:bg-white/5 transition-colors flex items-center shadow-sm text-sm">
                             <span class="material-symbols-outlined text-sm mr-2">refresh</span>
-                            Sync Reviews
+                            Refresh Leads
                         </button>
                     </div>
 
@@ -466,7 +466,7 @@
         </div>
     </div>
 
-    <!-- FULFILLMENT REVIEW SUMMARY MODAL (FACTORY FLOOR ONLY) -->
+    <!-- FULFILLMENT REVIEW SUMMARY -->
     <div id="workslipModal" class="fixed inset-0 z-40 bg-motis-dark/95 backdrop-blur-md flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="bg-white text-slate-900 border border-slate-300 w-full max-w-2xl rounded-sm shadow-2xl relative overflow-hidden flex flex-col p-10 font-mono text-sm max-h-[90vh]">
             
