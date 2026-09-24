@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const productionTableBody = document.getElementById("productionTableBody");
   const salesLoadingState = document.getElementById("salesLoadingState");
   const salesEmptyState = document.getElementById("salesEmptyState");
+  const salesMobileList = document.getElementById("salesMobileList");
   const productionEmptyState = document.getElementById("productionEmptyState");
+  const productionMobileList = document.getElementById("productionMobileList");
 
   // Lead Detail Modal Elements
   const leadModal = document.getElementById("leadModal");
@@ -163,6 +165,8 @@ document.addEventListener("DOMContentLoaded", () => {
   window.fetchLeads = async function () {
     salesTableBody.innerHTML = "";
     productionTableBody.innerHTML = "";
+    salesMobileList.innerHTML = "";
+    productionMobileList.innerHTML = "";
     salesEmptyState.classList.add("hidden-section");
     productionEmptyState.classList.add("hidden-section");
     salesLoadingState.classList.remove("hidden-section");
@@ -396,6 +400,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                 </td>`;
       salesTableBody.appendChild(tr);
+
+      const mobileCard = document.createElement("article");
+      mobileCard.className = "crm-mobile-card";
+      mobileCard.innerHTML =
+        '<div class="flex items-start justify-between gap-3 mb-3"><div class="min-w-0"><h3 class="font-bold text-white text-base truncate">' + escapeHtml(lead.name || "N/A") + '</h3><p class="text-xs text-slate-500 mt-1">' + date + '</p></div><span class="shrink-0 inline-flex px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ' + statusColor + '">' + (statusLabels[lead.status] || "New") + '</span></div>' +
+        '<dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-xs mb-4"><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Brand</dt><dd class="text-slate-300">' + (lead.brand === "more_paint" ? "More Paint" : "Motis Industrial") + '</dd></div><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Product</dt><dd class="text-slate-300 truncate">' + escapeHtml((lead.product_line || "Not specified").replace("motis_", "").replace("more_paint_", "").replace("-", " ")) + '</dd></div><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Quantity</dt><dd class="text-slate-300">' + escapeHtml(lead.quantity || "Not specified") + '</dd></div><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Location</dt><dd class="text-slate-300 truncate">' + escapeHtml(lead.location || "Not provided") + '</dd></div></dl>' +
+        '<button onclick="openLeadModal(\'' + lead.id + '\')" class="bg-motis-slate hover:bg-slate-800 text-white text-xs font-semibold px-3.5 py-2 rounded-sm border border-white/5 transition-colors">View Lead</button>';
+      salesMobileList.appendChild(mobileCard);
     });
   }
 
@@ -440,6 +452,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     </button>
                 </td>`;
       productionTableBody.appendChild(tr);
+
+      const mobileCard = document.createElement("article");
+      mobileCard.className = "crm-mobile-card";
+      mobileCard.innerHTML =
+        '<div class="flex items-start justify-between gap-3 mb-3"><div><p class="text-[10px] text-slate-500 uppercase tracking-wider">Reference</p><h3 class="font-bold text-white text-base">' + orderNum + '</h3></div><span class="text-[10px] uppercase tracking-wider text-slate-500">Won lead</span></div>' +
+        '<dl class="grid grid-cols-1 gap-3 text-xs mb-4"><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Product</dt><dd class="text-slate-300">' + productBase + '</dd></div><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Requested Quantity</dt><dd class="text-slate-300">' + volumeStr + '</dd></div><div><dt class="text-slate-500 uppercase tracking-wider mb-1">Delivery Location</dt><dd class="text-slate-300">' + escapeHtml(lead.location || "Not provided") + '</dd></div></dl>' +
+        '<button onclick="openWorkslipModal(\'' + lead.id + '\', \'' + orderNum + '\')" class="bg-slate-900 hover:bg-black text-white text-xs font-semibold px-4 py-2 border border-slate-700 rounded-sm transition-colors flex items-center justify-center space-x-2"><span class="material-symbols-outlined text-xs">fact_check</span><span>Review Summary</span></button>';
+      productionMobileList.appendChild(mobileCard);
     });
   }
 

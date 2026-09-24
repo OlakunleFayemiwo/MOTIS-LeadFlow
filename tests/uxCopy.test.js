@@ -98,3 +98,23 @@ test("static pages do not present unverified technical figures or certifications
   assert.ok(b2cPage.includes("confirm current coverage with MOTIS sales"));
   assert.ok(b2bPage.includes("documentation available on request"));
 });
+
+test("public customer-facing copy uses normal business actions", () => {
+  for (const stale of ["Initiate Request","Deploy Quote Request","Explore Capabilities"]) {
+    assert.ok(!b2bPage.includes(stale), `index.html still contains: ${stale}`);
+    assert.ok(!b2cPage.includes(stale), `more-paint.html still contains: ${stale}`);
+  }
+  assert.ok(b2bPage.includes("Request a Quote"));
+  assert.ok(b2bPage.includes("View Products"));
+  assert.ok(b2cPage.includes("Request a Quote"));
+  assert.ok(b2cPage.includes("Ask our AI Assistant"));
+});
+test("CRM includes dedicated mobile lead and fulfillment views", () => {
+  assert.ok(adminIndex.includes('id="salesMobileList"'));
+  assert.ok(adminIndex.includes('id="productionMobileList"'));
+  assert.ok(adminIndex.includes("salesDesktopTable"));
+  assert.ok(adminIndex.includes("productionDesktopTable"));
+  assert.ok(adminIndex.includes("@media (max-width:767px)"));
+  assert.ok(dashboard.includes("salesMobileList.appendChild"));
+  assert.ok(dashboard.includes("productionMobileList.appendChild"));
+});

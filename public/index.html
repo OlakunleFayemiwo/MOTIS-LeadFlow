@@ -214,7 +214,7 @@
         .icon-pulse {
             animation: pulse-glow 3s ease-in-out infinite;
         }
-    </style>
+    @media (max-width:767px){nav.fixed{height:64px;padding-left:1rem;padding-right:1rem}nav.fixed>div:first-child{font-size:1.05rem}nav.fixed .bg-motis-orange{padding:.55rem .85rem;font-size:.75rem;white-space:nowrap}header.pt-\\[80px\\]{padding-top:64px}header h1{font-size:clamp(2.65rem,13vw,4rem);line-height:1.02}header p{font-size:1rem;line-height:1.65}header .flex-col.sm\\:flex-row>a,header .flex-col.sm\\:flex-row>button{width:100%}#b2bAiDrawer,#b2cAiDrawer{width:100%;max-width:100vw}#b2bSpecModal>div,#b2bSuccessModal>div,#b2cSuccessModal>div{width:calc(100% - 2rem);max-height:calc(100vh - 2rem);overflow-y:auto}#quote .bg-motis-slate{padding:1.25rem}input,select,textarea,button,a{-webkit-tap-highlight-color:transparent}} </style>
 </head>
 
 <body
@@ -237,7 +237,7 @@
         <div class="flex items-center space-x-6">
             <a href="#quote"
                 class="bg-motis-orange text-white px-6 py-2.5 rounded-sm hover:bg-motis-orange-hover transition-colors font-medium text-sm tracking-wide shadow-lg hover:shadow-motis-orange/30 inline-block">
-                Initiate Request
+                Request a Quote
             </a>
         </div>
     </nav>
@@ -290,12 +290,12 @@
                 <div class="flex flex-col sm:flex-row gap-5 reveal-on-scroll reveal-visible delay-400">
                     <a href="#quote"
                         class="bg-motis-orange text-white font-medium text-lg px-10 py-4 rounded-sm hover:bg-motis-orange-hover transition-all flex items-center justify-center space-x-2 animate-glow">
-                        <span>Deploy Quote Request</span>
+                        <span>Request a Quote</span>
                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                     </a>
                     <a href="#product-lines"
                         class="bg-transparent border border-slate-600 text-white font-medium text-lg px-10 py-4 rounded-sm hover:bg-white/5 transition-all flex items-center justify-center">
-                        Explore Capabilities
+                        View Products
                     </a>
                 </div>
 
@@ -563,7 +563,7 @@
                         </div>
                         <div class="reveal-on-scroll delay-400">
                             <label
-                                class="block text-xs uppercase tracking-widest font-semibold text-slate-400 mb-3">Deployment
+                                class="block text-xs uppercase tracking-widest font-semibold text-slate-400 mb-3">Project
                                 Location *</label>
                             <input
                                 id="b2bLocation"
