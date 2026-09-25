@@ -21,18 +21,18 @@ async function signIn(page) {
       response.request().method() === "POST",
   );
 
-  await page.locator("#passwordInput").fill(process.env.E2E_CRM_PASSWORD);
-  await page.getByRole("button", { name: "Sign In" }).click();
-
-  const loginResponse = await loginResponsePromise;
-  expect(loginResponse.status()).toBe(200);
-
   const leadsResponsePromise = page.waitForResponse(
     (response) =>
       response.url().includes("/.netlify/functions/getLeads") &&
       response.request().method() === "GET" &&
       response.status() === 200,
   );
+
+  await page.locator("#passwordInput").fill(process.env.E2E_CRM_PASSWORD);
+  await page.getByRole("button", { name: "Sign In" }).click();
+
+  const loginResponse = await loginResponsePromise;
+  expect(loginResponse.status()).toBe(200);
 
   await expect(page.locator("#dashboardSection")).toBeVisible();
   await expect(page.locator("#loginSection")).toBeHidden();
@@ -46,7 +46,7 @@ test("production CRM harmless navigation and refresh interactions work", async (
 
   await expect(page.locator("#view-admin")).toBeVisible();
 
-  await page.getByRole("button", { name: /Sales & CRM/i }).click();
+  await page.locator("#roleBtn-sales").click();
   await expect(page.locator("#view-sales")).toBeVisible();
 
   const refreshResponsePromise = page.waitForResponse(
@@ -55,11 +55,11 @@ test("production CRM harmless navigation and refresh interactions work", async (
       response.request().method() === "GET" &&
       response.status() === 200,
   );
-  await page.getByRole("button", { name: /^Refresh$/ }).click();
+  await page.locator("#view-sales").getByRole("button", { name: "Refresh" }).click();
   await refreshResponsePromise;
   await expect(page.locator("#view-sales")).toBeVisible();
 
-  await page.getByRole("button", { name: /Fulfillment Review/i }).click();
+  await page.locator("#roleBtn-production").click();
   await expect(page.locator("#view-production")).toBeVisible();
 
   const refreshFulfillmentResponsePromise = page.waitForResponse(
@@ -68,11 +68,11 @@ test("production CRM harmless navigation and refresh interactions work", async (
       response.request().method() === "GET" &&
       response.status() === 200,
   );
-  await page.getByRole("button", { name: "Refresh Leads" }).click();
+  await page.locator("#view-production").getByRole("button", { name: "Refresh Leads" }).click();
   await refreshFulfillmentResponsePromise;
   await expect(page.locator("#view-production")).toBeVisible();
 
-  await page.getByRole("button", { name: /Lead Analytics/i }).click();
+  await page.locator("#roleBtn-admin").click();
   await expect(page.locator("#view-admin")).toBeVisible();
 });
 
@@ -114,7 +114,7 @@ test("production CRM lead detail modal opens and closes without saving changes",
   const saveStatusButton = page.locator("#saveStatusBtn");
   await expect(saveStatusButton).toBeVisible();
 
-  await page.locator("#leadModal button").first().click();
+  await page.locator('#leadModal button[onclick="closeLeadModal()"]').click();
   await expect(page.locator("#leadModal")).toBeHidden();
 });
 
