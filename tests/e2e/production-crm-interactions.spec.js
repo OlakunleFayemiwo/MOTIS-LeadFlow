@@ -115,7 +115,8 @@ test("production CRM lead detail modal opens and closes without saving changes",
   await expect(saveStatusButton).toBeVisible();
 
   await page.locator('#leadModal button[onclick="closeLeadModal()"]').click();
-  await expect(page.locator("#leadModal")).toBeHidden();
+  await expect(page.locator("#leadModal")).toHaveClass(/opacity-0/);
+  await expect(page.locator("#leadModal")).toHaveClass(/pointer-events-none/);
 });
 
 test("production CRM logout clears the authenticated dashboard", async ({
