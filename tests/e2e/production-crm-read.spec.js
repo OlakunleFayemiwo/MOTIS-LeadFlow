@@ -15,14 +15,26 @@ async function signInAndLoadLeads(page) {
   await page.goto("/admin/");
   await expect(page.locator("#loginSection")).toBeVisible();
 
+  const loginResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().includes("/.netlify/functions/crmLogin") &&
+      response.request().method() === "POST",
+  );
+
+  await page.locator("#passwordInput").fill(process.env.E2E_CRM_PASSWORD);
+  await page.getByRole("button", { name: "Sign In" }).click();
+
+  const loginResponse = await loginResponsePromise;
+  expect(loginResponse.status()).toBe(200);
+
   const leadsResponsePromise = page.waitForResponse(
     (response) =>
       response.url().includes("/.netlify/functions/getLeads") &&
       response.request().method() === "GET",
   );
 
-  await page.locator("#passwordInput").fill(process.env.E2E_CRM_PASSWORD);
-  await page.getByRole("button", { name: "Sign In" }).click();
+  await expect(page.locator("#dashboardSection")).toBeVisible();
+  await expect(page.locator("#loginSection")).toBeHidden();
 
   const leadsResponse = await leadsResponsePromise;
   expect(leadsResponse.status()).toBe(200);
@@ -30,9 +42,6 @@ async function signInAndLoadLeads(page) {
   const payload = await leadsResponse.json();
   expect(payload.success).toBe(true);
   expect(Array.isArray(payload.leads)).toBe(true);
-
-  await expect(page.locator("#dashboardSection")).toBeVisible();
-  await expect(page.locator("#loginSection")).toBeHidden();
 
   return payload.leads;
 }
