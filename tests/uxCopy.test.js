@@ -98,3 +98,58 @@ test("static pages do not present unverified technical figures or certifications
   assert.ok(b2cPage.includes("confirm current coverage with MOTIS sales"));
   assert.ok(b2bPage.includes("documentation available on request"));
 });
+
+test("public customer-facing copy uses normal business actions", () => {
+  for (const stale of ["Initiate Request","Deploy Quote Request","Explore Capabilities"]) {
+    assert.ok(!b2bPage.includes(stale), `index.html still contains: ${stale}`);
+    assert.ok(!b2cPage.includes(stale), `more-paint.html still contains: ${stale}`);
+  }
+  assert.ok(b2bPage.includes("Request a Quote"));
+  assert.ok(b2bPage.includes("View Products"));
+  assert.ok(b2cPage.includes("Request a Quote"));
+  assert.ok(b2cPage.includes("Ask our AI Assistant"));
+});
+test("CRM includes dedicated mobile lead and fulfillment views", () => {
+  assert.ok(adminIndex.includes('id="salesMobileList"'));
+  assert.ok(adminIndex.includes('id="productionMobileList"'));
+  assert.ok(adminIndex.includes("salesDesktopTable"));
+  assert.ok(adminIndex.includes("productionDesktopTable"));
+  assert.ok(adminIndex.includes("@media (max-width:767px)"));
+  assert.ok(dashboard.includes("salesMobileList.appendChild"));
+  assert.ok(dashboard.includes("productionMobileList.appendChild"));
+});
+
+test("customer-facing pages avoid theatrical or unsupported business language", () => {
+  for (const stale of [
+    "Launch Flagship Brand Portal",
+    "high-tensile waterproofing specifications",
+    "high-concentration safety certifications",
+    "uncompromising chemical, coating, and industrial solutions",
+    "highest standards of modern infrastructure",
+    "Lead Industrial Chemist",
+    "Consult AI Assistant",
+    "Technical Specification Sheet",
+  ]) {
+    assert.ok(!b2bPage.includes(stale), `index.html still contains: ${stale}`);
+    assert.ok(!b2cPage.includes(stale), `more-paint.html still contains: ${stale}`);
+  }
+  assert.ok(b2bPage.includes("View More Paint Products"));
+  assert.ok(b2bPage.includes("Product Details"));
+  assert.ok(b2cPage.includes("Ask our AI Assistant"));
+});
+test("CRM uses ordinary operational status language", () => {
+  assert.ok(adminIndex.includes("Connected"));
+  assert.ok(adminIndex.includes("Refresh Leads"));
+  assert.ok(!adminIndex.includes("Supabase Sync Active"));
+  assert.ok(!adminIndex.includes("Sync Reviews"));
+});
+
+test("remaining frontend labels stay customer-facing and neutral", () => {
+  assert.ok(!b2bPage.includes("Dismiss Specs"));
+  assert.ok(!b2cPage.includes("Dismiss Specs"));
+  assert.ok(!b2bPage.includes("lead research chemist"));
+  assert.ok(!b2bPage.includes("Launch Flagship Brand Portal"));
+  assert.ok(b2bPage.includes("Close"));
+  assert.ok(b2cPage.includes("Products"));
+  assert.ok(b2cPage.includes("Request a Quote"));
+});

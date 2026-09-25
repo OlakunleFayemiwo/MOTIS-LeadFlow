@@ -214,7 +214,7 @@
         .icon-pulse {
             animation: pulse-glow 3s ease-in-out infinite;
         }
-    </style>
+    @media (max-width:767px){nav.fixed{height:64px;padding-left:1rem;padding-right:1rem}nav.fixed>div:first-child{font-size:1.05rem}nav.fixed .bg-motis-orange{padding:.55rem .85rem;font-size:.75rem;white-space:nowrap}body>header{padding-top:64px}header h1{font-size:clamp(2.65rem,13vw,4rem);line-height:1.02}header p{font-size:1rem;line-height:1.65}header .flex-col.sm\\:flex-row>a,header .flex-col.sm\\:flex-row>button{width:100%}#b2bAiDrawer,#b2cAiDrawer{width:100%;max-width:100vw}#b2bSpecModal>div,#b2bSuccessModal>div,#b2cSuccessModal>div{width:calc(100% - 2rem);max-height:calc(100vh - 2rem);overflow-y:auto}#quote .bg-motis-slate{padding:1.25rem}input,select,textarea,button,a{-webkit-tap-highlight-color:transparent}} </style>
 </head>
 
 <body
@@ -236,8 +236,8 @@
 
         <div class="flex items-center space-x-6">
             <a href="#quote"
-                class="bg-motis-orange text-white px-6 py-2.5 rounded-sm hover:bg-motis-orange-hover transition-colors font-medium text-sm tracking-wide shadow-lg hover:shadow-motis-orange/30 inline-block">
-                Initiate Request
+                class="bg-motis-orange text-white px-6 py-2.5 min-h-[44px] rounded-sm hover:bg-motis-orange-hover transition-colors font-medium text-sm tracking-wide shadow-lg hover:shadow-motis-orange/30 inline-flex items-center justify-center">
+                Request a Quote
             </a>
         </div>
     </nav>
@@ -283,19 +283,18 @@
 
                 <p
                     class="text-lg md:text-2xl text-slate-400 font-light max-w-2xl leading-relaxed mb-12 reveal-on-scroll reveal-visible delay-300">
-                    Delivering uncompromising chemical, coating, and industrial solutions. Engineered to exceed the
-                    highest standards of modern infrastructure.
+                    Providing paints, coatings, and industrial products for construction, manufacturing, and commercial projects.
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-5 reveal-on-scroll reveal-visible delay-400">
                     <a href="#quote"
                         class="bg-motis-orange text-white font-medium text-lg px-10 py-4 rounded-sm hover:bg-motis-orange-hover transition-all flex items-center justify-center space-x-2 animate-glow">
-                        <span>Deploy Quote Request</span>
+                        <span>Request a Quote</span>
                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                     </a>
                     <a href="#product-lines"
                         class="bg-transparent border border-slate-600 text-white font-medium text-lg px-10 py-4 rounded-sm hover:bg-white/5 transition-all flex items-center justify-center">
-                        Explore Capabilities
+                        View Products
                     </a>
                 </div>
 
@@ -370,7 +369,7 @@
                         <span>Construction Chemicals</span>
                         <span class="material-symbols-outlined text-sm text-slate-500 group-hover:text-motis-orange">open_in_new</span>
                     </h3>
-                    <p class="text-slate-400 font-light leading-relaxed">Structural admixtures and sealants. Click to view high-tensile waterproofing specifications.</p>
+                    <p class="text-slate-400 font-light leading-relaxed">Structural admixtures and sealants. Product details and supporting documentation are available on request.</p>
                 </div>
                 <!-- Card 4 -->
                 <div onclick="openB2BSpecModal('hygiene')"
@@ -389,7 +388,7 @@
                         <span>Hygiene Chemicals</span>
                         <span class="material-symbols-outlined text-sm text-slate-500 group-hover:text-motis-orange">open_in_new</span>
                     </h3>
-                    <p class="text-slate-400 font-light leading-relaxed">Enterprise sanitation solutions. Click to inspect high-concentration safety certifications.</p>
+                    <p class="text-slate-400 font-light leading-relaxed">Enterprise sanitation solutions. Product details and supporting documentation are available on request.</p>
                 </div>
                 <!-- Card 5 -->
                 <div onclick="openB2BSpecModal('adhesives')"
@@ -407,7 +406,7 @@
                         <span>Adhesives & Sealants</span>
                         <span class="material-symbols-outlined text-sm text-slate-500 group-hover:text-motis-orange">open_in_new</span>
                     </h3>
-                    <p class="text-slate-400 font-light leading-relaxed">High-tensile architectural fusion. Click to view expansion joint bonding specifications.</p>
+                    <p class="text-slate-400 font-light leading-relaxed">Adhesives and sealants for selected construction applications. Product details are available on request.</p>
                 </div>
                 <!-- Card 6 -->
                 <div onclick="openB2BSpecModal('specialty')"
@@ -461,15 +460,14 @@
                                 d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
                                 stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
                         </svg>
-                        <span class="text-xs uppercase tracking-[0.2em] font-semibold">Flagship Brand</span>
+                        <span class="text-xs uppercase tracking-[0.2em] font-semibold">More Paint</span>
                     </div>
                     <h2
                         class="font-heading text-4xl md:text-6xl text-white font-black mb-8 tracking-tight reveal-on-scroll delay-200">
                         Engineered to Endure.</h2>
                     <p class="text-xl text-slate-400 font-light mb-10 leading-relaxed reveal-on-scroll delay-300">
                         More Paint isn't just color—it is a durable architectural coating range. Designed for
-                        commercial durability and residential elegance, our flagship line is made for Nigerian
-                        weather conditions.
+                        commercial durability and residential use, with products presented for Nigerian weather conditions.
                     </p>
                     <ul class="space-y-6 mb-12">
                         <li class="flex items-center reveal-on-scroll delay-400">
@@ -490,14 +488,13 @@
                             <div
                                 class="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mr-4 text-motis-orange">
                                 ✓</div>
-                            <span class="text-slate-300 font-medium tracking-wide">High-volume deployment for
-                                contractors</span>
+                            <span class="text-slate-300 font-medium tracking-wide">Bulk supply available for contractors</span>
                         </li>
                     </ul>
                     <div class="reveal-on-scroll delay-700">
                         <a href="more-paint.html"
                             class="inline-flex items-center space-x-3 bg-motis-orange text-white font-semibold tracking-wide px-8 py-4 rounded-sm hover:bg-motis-orange-hover transition-colors shadow-lg hover:shadow-motis-orange/20">
-                            <span>Launch Flagship Brand Portal</span>
+                            <span>View More Paint Products</span>
                             <span class="material-symbols-outlined text-sm">open_in_new</span>
                         </a>
                     </div>
@@ -563,7 +560,7 @@
                         </div>
                         <div class="reveal-on-scroll delay-400">
                             <label
-                                class="block text-xs uppercase tracking-widest font-semibold text-slate-400 mb-3">Deployment
+                                class="block text-xs uppercase tracking-widest font-semibold text-slate-400 mb-3">Project
                                 Location *</label>
                             <input
                                 id="b2bLocation"
@@ -586,7 +583,7 @@
                                 <option value="industrial">Heavy Industrial Coatings</option>
                                 <option value="construction">Structural Construction Chemicals</option>
                                 <option value="cleaning">Enterprise Hygiene Solutions</option>
-                                <option value="adhesives">High-Tensile Adhesives & Sealants</option>
+                                <option value="adhesives">Adhesives & Sealants</option>
                                 <option value="specialty">Custom Formulation</option>
                             </select>
                         </div>
@@ -931,7 +928,7 @@
                 }
             };
 
-            // --- B2B TECHNICAL SPEC SHEET CONTROLLERS ---
+            // --- B2B PRODUCT DETAIL CONTROLLERS ---
             const b2bSpecDetails = {
                 coatings: {
                     title: "Industrial Coatings & Barriers",
@@ -963,7 +960,7 @@
                 },
                 specialty: {
                     title: "Specialty Formulations",
-                    desc: "Custom-developed chemical binders, fire-retardants, and specialized additives. Formulated directly by our lead research chemist to meet non-standard mechanical and thermal tolerances.",
+                    desc: "Custom-developed specialty products for selected industrial applications. Product details and supporting documentation are available on request.",
                     compound: "Custom Co-Polymer Blends & High-Temperature Binders",
                     industries: "Automotive Parts, Chemical Refineries, Defense Infrastructure",
                     standards: "Testing and certification documentation provided per custom contract on request"
@@ -1030,7 +1027,7 @@
             
             <div class="flex justify-between items-start mb-6 shrink-0 relative z-10">
                 <div>
-                    <span class="text-[10px] font-bold text-motis-orange tracking-[0.25em] uppercase block mb-1">Industrial Specification Sheet</span>
+                    <span class="text-[10px] font-bold text-motis-orange tracking-[0.25em] uppercase block mb-1">Product Details</span>
                     <h3 class="font-heading text-3xl text-white font-bold tracking-tight" id="b2b-detail-title">Solution Name</h3>
                 </div>
                 <button onclick="closeB2BSpecModal()" class="text-slate-400 hover:text-white p-2">
@@ -1058,7 +1055,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-white/5">
                     <div>
-                        <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">Standards Compliance</span>
+                        <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">Documentation</span>
                         <div class="text-white font-semibold" id="b2b-detail-standards">Standards</div>
                     </div>
                     <div>
@@ -1071,11 +1068,11 @@
             <!-- Footer actions -->
             <div class="flex flex-col sm:flex-row gap-4 shrink-0 relative z-10 pt-4 border-t border-white/5">
                 <button onclick="closeB2BSpecModal()" class="flex-grow bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-semibold py-3 px-6 rounded-sm transition-colors text-center text-sm">
-                    Dismiss Specs
+                    Close
                 </button>
                 <button onclick="consultB2BAiFromCatalog()" class="flex-grow bg-motis-orange hover:bg-motis-orange-hover text-white font-semibold py-3 px-6 rounded-sm transition-colors flex items-center justify-center space-x-2 text-sm shadow-md">
                     <span class="material-symbols-outlined text-base">psychology</span>
-                    <span>Consult AI Assistant</span>
+                    <span>Ask our AI Assistant</span>
                 </button>
             </div>
         </div>

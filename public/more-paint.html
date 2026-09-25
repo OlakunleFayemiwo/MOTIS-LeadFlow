@@ -68,7 +68,7 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-    </style>
+    @media (max-width:767px){nav.fixed{height:64px;padding-left:1rem;padding-right:1rem}nav.fixed>div:first-child{font-size:1.05rem}nav.fixed .bg-motis-orange{padding:.55rem .85rem;font-size:.75rem;white-space:nowrap}header.pt-\\[80px\\]{padding-top:64px}header h1{font-size:clamp(2.5rem,12vw,4rem);line-height:1.03}header p{font-size:1rem;line-height:1.65}header .flex-col.sm\\:flex-row>a,header .flex-col.sm\\:flex-row>button{width:100%}#b2bAiDrawer{width:100%;max-width:100vw}#b2bSpecModal>div{width:calc(100% - 2rem);max-height:calc(100vh - 2rem);overflow-y:auto}input,select,textarea,button,a{-webkit-tap-highlight-color:transparent}} </style>
 </head>
 
 <body class="bg-motis-dark text-motis-light antialiased font-sans overflow-x-hidden selection:bg-motis-orange selection:text-white">
@@ -80,8 +80,8 @@
         </div>
         <ul class="hidden md:flex space-x-10 items-center text-sm font-medium tracking-wide text-slate-300">
             <li><a class="hover:text-white transition-colors" href="index.html">Motis Industries</a></li>
-            <li><a class="hover:text-white transition-colors" href="#chemistry">Scientific Edge</a></li>
-            <li><a class="hover:text-white transition-colors" href="#catalog">Premium Catalog</a></li>
+            <li><a class="hover:text-white transition-colors" href="#chemistry">About More Paint</a></li>
+            <li><a class="hover:text-white transition-colors" href="#catalog">Products</a></li>
             <li><a class="hover:text-white transition-colors" href="#partner">Partnerships</a></li>
         </ul>
         <div class="flex items-center space-x-6">
@@ -102,7 +102,7 @@
         <div class="relative z-10 w-full max-w-[1400px] mx-auto px-8 md:px-16 py-20 flex flex-col justify-center">
             <div class="max-w-4xl">
                 <div class="inline-flex items-center space-x-3 bg-motis-orange/10 border border-motis-orange/20 px-5 py-2 rounded-full mb-8 text-motis-orange">
-                    <span class="text-xs uppercase tracking-[0.25em] font-semibold">Flagship Architectural Brand</span>
+                    <span class="text-xs uppercase tracking-[0.25em] font-semibold">Architectural Coatings</span>
                 </div>
                 <h1 class="font-heading text-5xl md:text-[5rem] text-white font-black leading-[1.05] tracking-tight mb-8">
                     Architectural Coatings<br />
@@ -113,19 +113,19 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-5">
                     <a href="#order" class="bg-motis-orange text-white font-medium text-lg px-8 py-4 rounded-sm hover:bg-motis-orange-hover transition-all flex items-center justify-center space-x-2">
-                        <span>Deploy Quote Request</span>
+                        <span>Request a Quote</span>
                         <span class="material-symbols-outlined text-sm">arrow_forward</span>
                     </a>
                     <button onclick="toggleAiDrawer(true)" class="bg-transparent border border-slate-600 text-white font-medium text-lg px-8 py-4 rounded-sm hover:bg-white/5 transition-all flex items-center justify-center space-x-2">
                         <span class="material-symbols-outlined text-sm">psychology</span>
-                        <span>Consult AI Assistant</span>
+                        <span>Ask our AI Assistant</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- The Trust Pillar: The Chemist Founder Biography -->
+    <!-- Product Development -->
     <section class="py-32 bg-motis-slate border-t border-b border-white/5 relative z-20" id="chemistry">
         <div class="max-w-[1400px] mx-auto px-8 md:px-16">
             <div class="flex flex-col lg:flex-row items-center gap-16">
@@ -137,7 +137,7 @@
                         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                         <div class="text-center relative z-10">
                             <span class="material-symbols-outlined text-7xl text-motis-orange mb-6">science</span>
-                            <h3 class="font-heading text-2xl text-white font-bold mb-3">Custom Polymer Matrix</h3>
+                            <h3 class="font-heading text-2xl text-white font-bold mb-3">Product Formulation</h3>
                             <p class="text-slate-400 text-sm font-light max-w-sm mx-auto leading-relaxed">
                                 Formulated with heavy acrylic resins that polymerize into a breathing barrier—allowing moisture vapor to escape without peeling or bubbling.
                             </p>
@@ -148,16 +148,16 @@
                 <!-- Text Biography -->
                 <div class="w-full lg:w-1/2">
                     <div class="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-1.5 rounded-sm mb-6 text-slate-300">
-                        <span class="text-xs uppercase tracking-[0.2em] font-semibold">Scientific Heritage</span>
+                        <span class="text-xs uppercase tracking-[0.2em] font-semibold">Product Development</span>
                     </div>
                     <h2 class="font-heading text-3xl md:text-5xl text-white font-bold mb-6 tracking-tight">
-                        Designed by an Industrial Chemist.
+                        Developed for Local Conditions.
                     </h2>
                     <p class="text-lg text-slate-400 font-light mb-6 leading-relaxed">
-                        Many commercial paint brands are simply watered-down standard polymers mixed with dye. More Paint is different. Engineered directly by our **founder and Lead Industrial Chemist**, every batch undergoes rigorous chemical optimization.
+                        More Paint is developed with attention to the conditions and surfaces common in Nigerian building projects. Product details and application guidance are confirmed through MOTIS sales.
                     </p>
                     <p class="text-lg text-slate-400 font-light mb-8 leading-relaxed">
-                        Having worked on manufacturing floors for decades, our founder saw how quickly standard paints deteriorate in Nigeria's persistent humidity and coastal salt air. Motis focuses on formulations suited to these conditions and to the surfaces Nigerian builders actually use: concrete, wood, and steel.
+                        The range is presented for common residential and commercial surfaces, including concrete, wood, and steel. Exact suitability should be confirmed for the intended application.
                     </p>
                     <div class="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
                         <div>
@@ -195,7 +195,7 @@
                     <p class="text-slate-400 font-light leading-relaxed mb-6">
                         Ultra-thick exterior protection. Resists heavy downpours, intense direct sunlight, and carbonation buildup.
                     </p>
-                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Bulk Supply Only</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Bulk Supply Available</span>
                 </div>
                 <!-- Item 2 -->
                 <div onclick="openCatalogModal('silk')" class="bg-motis-slate/30 border border-white/5 p-8 rounded-sm hover:border-motis-orange/30 hover:bg-white/5 transition-colors cursor-pointer group">
@@ -207,7 +207,7 @@
                     <p class="text-slate-400 font-light leading-relaxed mb-6">
                         Stain-resistant, scrubbable interior paint. Delivers a highly refined silk finish that resists cleaning abrasions.
                     </p>
-                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Washable Resin</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Washable Finish</span>
                 </div>
                 <!-- Item 3 -->
                 <div onclick="openCatalogModal('epoxy')" class="bg-motis-slate/30 border border-white/5 p-8 rounded-sm hover:border-motis-orange/30 hover:bg-white/5 transition-colors cursor-pointer group">
@@ -219,7 +219,7 @@
                     <p class="text-slate-400 font-light leading-relaxed mb-6">
                         High-traffic chemical resistant flooring coats. Designed for warehouses, manufacturing plants, and heavy machinery garages.
                     </p>
-                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Self-Leveling</span>
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Floor Coating System</span>
                 </div>
             </div>
         </div>
@@ -393,7 +393,7 @@
             
             <div class="flex justify-between items-start mb-6 shrink-0 relative z-10">
                 <div>
-                    <span class="text-[10px] font-bold text-motis-orange tracking-[0.25em] uppercase block mb-1">Technical Specification Sheet</span>
+                    <span class="text-[10px] font-bold text-motis-orange tracking-[0.25em] uppercase block mb-1">Product Details</span>
                     <h3 class="font-heading text-3xl text-white font-bold tracking-tight" id="detail-title">Product Name</h3>
                 </div>
                 <button onclick="closeCatalogModal()" class="text-slate-400 hover:text-white p-2">
@@ -443,11 +443,11 @@
             <!-- Footer actions -->
             <div class="flex flex-col sm:flex-row gap-4 shrink-0 relative z-10 pt-4 border-t border-white/5">
                 <button onclick="closeCatalogModal()" class="flex-grow bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-semibold py-3 px-6 rounded-sm transition-colors text-center text-sm">
-                    Dismiss Specs
+                    Close
                 </button>
-                <button onclick="consultChemistFromCatalog()" class="flex-grow bg-motis-orange hover:bg-motis-orange-hover text-white font-semibold py-3 px-6 rounded-sm transition-colors flex items-center justify-center space-x-2 text-sm shadow-md">
+                <button onclick="consultAiFromCatalog()" class="flex-grow bg-motis-orange hover:bg-motis-orange-hover text-white font-semibold py-3 px-6 rounded-sm transition-colors flex items-center justify-center space-x-2 text-sm shadow-md">
                     <span class="material-symbols-outlined text-base">psychology</span>
-                    <span>Consult AI Assistant</span>
+                    <span>Ask our AI Assistant</span>
                 </button>
             </div>
         </div>
@@ -466,9 +466,9 @@
             </div>
             <div class="flex flex-wrap md:justify-end gap-x-10 gap-y-4 text-sm font-medium tracking-widest uppercase text-slate-400">
                 <a class="hover:text-motis-orange transition-colors" href="index.html">Motis Industries</a>
-                <a class="hover:text-motis-orange transition-colors" href="#chemistry">Science</a>
-                <a class="hover:text-motis-orange transition-colors" href="#catalog">Catalog</a>
-                <a class="hover:text-motis-orange transition-colors" href="#order">Order</a>
+                <a class="hover:text-motis-orange transition-colors" href="#chemistry">Product Development</a>
+                <a class="hover:text-motis-orange transition-colors" href="#catalog">Products</a>
+                <a class="hover:text-motis-orange transition-colors" href="#order">Request a Quote</a>
             </div>
         </div>
         <div class="max-w-[1400px] mx-auto mt-16 pt-8 border-t border-white/5 text-slate-600 text-sm font-light text-center md:text-left">
@@ -744,7 +744,7 @@
         const productDetails = {
             exterior: {
                 title: "Weather-Shield Exterior Acrylic",
-                desc: "Motis flagship exterior acrylic compound engineered specifically for extreme tropical and coastal zones. Features advanced high-cross-linking polymers that resist peeling and salt-water carbonation.",
+                desc: "Exterior architectural coating for projects in tropical and coastal environments. Confirm current product suitability and technical details with MOTIS sales.",
                 binder: "Acrylic copolymer base — full technical data on request",
                 coverage: "Indicative — confirm current coverage with MOTIS sales",
                 coats: "2 coats recommended",
@@ -794,7 +794,7 @@
             currentActiveCatalogKey = null;
         };
 
-        window.consultChemistFromCatalog = function() {
+        window.consultAiFromCatalog = function() {
             const prod = productDetails[currentActiveCatalogKey];
             if (!prod) return;
             closeCatalogModal();
