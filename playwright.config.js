@@ -14,11 +14,13 @@ export default defineConfig({
     screenshot: "only-on-failure",
     video: "retain-on-failure",
   },
-  webServer: {
-    command: "python3 -m http.server 4173 --directory public",
-    url: "http://127.0.0.1:4173",
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: process.env.E2E_PRODUCTION
+    ? undefined
+    : {
+        command: "python3 -m http.server 4173 --directory public",
+        url: "http://127.0.0.1:4173",
+        reuseExistingServer: !process.env.CI,
+      },
   projects: [
     { name: "mobile-320", use: { ...devices["iPhone SE"] } },
     { name: "mobile-390", use: { ...devices["iPhone 12"] } },
