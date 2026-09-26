@@ -52,6 +52,35 @@ test("CRM presents a usable sign-in screen", async ({ page }) => {
   expect(passwordBox.height).toBeGreaterThanOrEqual(40);
 });
 
+test("More Paint WhatsApp CTA stays on the WhatsApp path when no direct number is configured", async ({ page }) => {
+  await page.route("**/.netlify/functions/aiQuoteAssistant", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        reply: "Illustrative estimate for testing the WhatsApp action.",
+      }),
+    });
+  });
+
+  await page.goto("/more-paint.html");
+  await page.locator("#chatInput").fill("Test building project");
+  await page.locator("#chatForm").evaluate((form) => form.requestSubmit());
+
+  const cta = page.getByRole("button", {
+    name: /Send Estimate to WhatsApp & Request Quote/i,
+  });
+  await expect(cta).toBeVisible();
+
+  const popupPromise = page.waitForEvent("popup");
+  await cta.click();
+  const popup = await popupPromise;
+  await popup.waitForLoadState("domcontentloaded").catch(() => {});
+  expect(popup.url()).toMatch(/^https:\/\/wa\.me\/\?text=/);
+  await popup.close();
+});
+
 test("CRM mobile navigation controls are present", async ({ page }) => {
   await page.goto("/admin/");
   for (const id of ["roleBtn-admin", "roleBtn-sales", "roleBtn-production"]) {
