@@ -86,7 +86,7 @@ test("public mobile footer keeps all navigation links usable", async ({ page }) 
     expect(box.height).toBeGreaterThanOrEqual(44);
   }
 
-  const quoteLink = footerNav.getByRole("link", { name: "Quote" });
+  const quoteLink = footerNav.getByRole("link", { name: "Request a Quote" });
   await expect(quoteLink).toBeVisible();
 });
 
