@@ -67,6 +67,7 @@ test("More Paint WhatsApp CTA stays on the WhatsApp path when no direct number i
   await page.goto("/more-paint.html");
   await page.locator("#chatInput").fill("Test building project");
   await page.locator("#chatForm").evaluate((form) => form.requestSubmit());
+  await expect(page.locator("#chatHistory")).toContainText("Illustrative estimate for testing the WhatsApp action.");
 
   const cta = page.getByRole("button", {
     name: /Send Estimate to WhatsApp & Request Quote/i,
