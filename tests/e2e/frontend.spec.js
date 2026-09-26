@@ -69,6 +69,60 @@ test("CRM mobile card containers exist and desktop tables remain present", async
   await expect(page.locator("#productionDesktopTable")).toBeAttached();
 });
 
+
+
+test("public mobile footer keeps all navigation links usable", async ({ page }) => {
+  await page.goto("/");
+  const footerNav = page.locator("footer .footer-nav");
+  await expect(footerNav).toBeVisible();
+
+  const links = footerNav.getByRole("link");
+  await expect(links).toHaveCount(4);
+
+  for (let i = 0; i < 4; i += 1) {
+    const box = await links.nth(i).boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const quoteLink = footerNav.getByRole("link", { name: "Quote" });
+  await expect(quoteLink).toBeVisible();
+});
+
+test("CRM mobile department navigation has a visible three-button layout", async ({ page }) => {
+  await page.goto("/admin/");
+
+  const result = await page.evaluate(() => {
+    const dashboard = document.querySelector("#dashboardSection");
+    const aside = dashboard?.querySelector("aside");
+    const nav = aside?.querySelector("nav");
+    if (!dashboard || !aside || !nav) return null;
+
+    dashboard.classList.remove("hidden-section");
+    const buttons = [...nav.querySelectorAll("button")];
+    const navStyle = getComputedStyle(nav);
+    const widths = buttons.map((button) => button.getBoundingClientRect().width);
+
+    return {
+      gridColumns: navStyle.gridTemplateColumns,
+      overflowX: navStyle.overflowX,
+      buttonCount: buttons.length,
+      widths,
+      viewportWidth: window.innerWidth,
+    };
+  });
+
+  expect(result).not.toBeNull();
+  expect(result.buttonCount).toBe(3);
+
+  if (result.viewportWidth < 768) {
+    expect(result.gridColumns.split(" ").length).toBe(3);
+    expect(result.overflowX).toBe("visible");
+    expect(result.widths.every((width) => width >= 44)).toBe(true);
+  }
+});
+
 test("CRM lead and fulfillment modals are present for interactive flows", async ({ page }) => {
   await page.goto("/admin/");
   await expect(page.locator("#leadModal")).toBeAttached();
