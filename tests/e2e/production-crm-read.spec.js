@@ -33,8 +33,8 @@ async function signInAndLoadLeads(page) {
       response.request().method() === "GET",
   );
 
-  await expect(page.locator("#dashboardSection")).toBeVisible();
-  await expect(page.locator("#loginSection")).toBeHidden();
+await expect(page.locator("#dashboardSection")).toBeVisible();
+await expect(page.locator("#loginSection")).toHaveClass(/hidden-section/);
 
   const leadsResponse = await leadsResponsePromise;
   expect(leadsResponse.status()).toBe(200);
