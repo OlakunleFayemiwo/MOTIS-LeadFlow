@@ -687,14 +687,11 @@
                                 const waText = encodeURIComponent(`Hello Motis Industries! I got the following estimate from your AI Sales & Technical Inquiry Assistant:\n\n${aiText}\n\nI'd like to proceed with a formal quote.`);
                                 window.open(`https://wa.me/${configuredPhone.replace('+', '')}?text=${waText}`, '_blank');
                             } else {
-                                // Fallback: guide the user to the enquiry form. The Project
-                                // Specifications field is left unchanged.
-                                const msgBox = document.getElementById('formMessage');
-                                if (msgBox) {
-                                    msgBox.scrollIntoView({ behavior: 'smooth' });
-                                    msgBox.focus();
-                                }
-                                if (typeof toggleAiDrawer === 'function') toggleAiDrawer(false);
+                                // Keep the CTA on the WhatsApp path even when a direct sales
+                                // number is not configured. WhatsApp can open a share flow with
+                                // the estimate pre-filled rather than redirecting to the form.
+                                const shareUrl = `https://wa.me/?text=${waText}`;
+                                window.open(shareUrl, '_blank', 'noopener,noreferrer');
                             }
                         });
                         // Append to the last AI bubble
