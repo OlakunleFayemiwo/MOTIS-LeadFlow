@@ -15,11 +15,12 @@ test("WhatsApp CTA fallback never writes into the Project Specifications textare
   assert.doesNotMatch(b2cPage, /msgBox\.value\s*=\s*`\[AI/);
   assert.doesNotMatch(b2bPage, /b2bMsgBox\.value\s*=\s*`\[AI/);
 
-  // The fallback keeps the existing scroll-and-focus guidance behaviour.
-  assert.ok(b2cPage.includes("document.getElementById('formMessage')"));
-  assert.ok(b2bPage.includes("document.getElementById('b2bMessage')"));
-  assert.ok(b2cPage.includes("scrollIntoView({ behavior: 'smooth' })"));
-  assert.ok(b2bPage.includes("scrollIntoView({ behavior: 'smooth' })"));
+  // Without a configured direct sales number, both CTAs remain on the
+  // WhatsApp path and pre-fill the message for the visitor.
+  assert.ok(b2cPage.includes("https://wa.me/?text=${waText}"));
+  assert.ok(b2bPage.includes("https://wa.me/?text=${waText}"));
+  assert.ok(!b2cPage.includes("scrollIntoView({ behavior: 'smooth' })"));
+  assert.ok(!b2bPage.includes("scrollIntoView({ behavior: 'smooth' })"));
 });
 
 test("CRM uses clear business terminology, not theatrical labels", () => {

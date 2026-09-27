@@ -52,6 +52,37 @@ test("CRM presents a usable sign-in screen", async ({ page }) => {
   expect(passwordBox.height).toBeGreaterThanOrEqual(40);
 });
 
+test("More Paint WhatsApp CTA stays on the WhatsApp path when no direct number is configured", async ({ page }) => {
+  await page.route("**/.netlify/functions/aiQuoteAssistant", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        success: true,
+        reply: "Illustrative estimate for testing the WhatsApp action.",
+      }),
+    });
+  });
+
+  await page.goto("/more-paint.html");
+  await page.getByRole("button", { name: /Ask our AI Assistant/i }).first().click();
+  await page.locator("#chatInput").fill("Test building project");
+  await page.locator("#chatForm").evaluate((form) => form.requestSubmit());
+  await expect(page.locator("#chatHistory")).toContainText("Illustrative estimate for testing the WhatsApp action.");
+
+  const cta = page.getByRole("button", {
+    name: /Send Estimate to WhatsApp & Request Quote/i,
+  });
+  await expect(cta).toBeVisible();
+
+  const popupPromise = page.waitForEvent("popup");
+  await cta.click();
+  const popup = await popupPromise;
+  await popup.waitForLoadState("domcontentloaded").catch(() => {});
+  expect(popup.url()).toMatch(/^https:\/\/(?:wa\.me\/\?text=|api\.whatsapp\.com\/send\/\?text=)/);
+  await popup.close();
+});
+
 test("CRM mobile navigation controls are present", async ({ page }) => {
   await page.goto("/admin/");
   for (const id of ["roleBtn-admin", "roleBtn-sales", "roleBtn-production"]) {
@@ -67,6 +98,61 @@ test("CRM mobile card containers exist and desktop tables remain present", async
   await expect(page.locator("#productionMobileList")).toBeAttached();
   await expect(page.locator("#salesDesktopTable")).toBeAttached();
   await expect(page.locator("#productionDesktopTable")).toBeAttached();
+});
+
+
+
+test("public mobile footer keeps all navigation links usable", async ({ page }) => {
+  test.skip(test.info().project.name === "tablet-768" || test.info().project.name === "desktop", "Mobile footer touch-target rules apply below 768px");
+  await page.goto("/");
+  const footerNav = page.locator("footer .footer-nav");
+  await expect(footerNav).toBeVisible();
+
+  const links = footerNav.getByRole("link");
+  await expect(links).toHaveCount(4);
+
+  for (let i = 0; i < 4; i += 1) {
+    const box = await links.nth(i).boundingBox();
+    expect(box).not.toBeNull();
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const quoteLink = footerNav.getByRole("link", { name: "Request a Quote" });
+  await expect(quoteLink).toBeVisible();
+});
+
+test("CRM mobile department navigation has a visible three-button layout", async ({ page }) => {
+  await page.goto("/admin/");
+
+  const result = await page.evaluate(() => {
+    const dashboard = document.querySelector("#dashboardSection");
+    const aside = dashboard?.querySelector("aside");
+    const nav = aside?.querySelector("nav");
+    if (!dashboard || !aside || !nav) return null;
+
+    dashboard.classList.remove("hidden-section");
+    const buttons = [...nav.querySelectorAll("button")];
+    const navStyle = getComputedStyle(nav);
+    const widths = buttons.map((button) => button.getBoundingClientRect().width);
+
+    return {
+      gridColumns: navStyle.gridTemplateColumns,
+      overflowX: navStyle.overflowX,
+      buttonCount: buttons.length,
+      widths,
+      viewportWidth: window.innerWidth,
+    };
+  });
+
+  expect(result).not.toBeNull();
+  expect(result.buttonCount).toBe(3);
+
+  if (result.viewportWidth < 768) {
+    expect(result.gridColumns.split(" ").length).toBe(3);
+    expect(result.overflowX).toBe("visible");
+    expect(result.widths.every((width) => width >= 44)).toBe(true);
+  }
 });
 
 test("CRM lead and fulfillment modals are present for interactive flows", async ({ page }) => {

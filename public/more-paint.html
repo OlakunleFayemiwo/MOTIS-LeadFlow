@@ -68,7 +68,10 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-    @media (max-width:767px){nav.fixed{height:64px;padding-left:1rem;padding-right:1rem}nav.fixed>div:first-child{font-size:1.05rem}nav.fixed .bg-motis-orange{padding:.55rem .85rem;font-size:.75rem;white-space:nowrap}header.pt-\\[80px\\]{padding-top:64px}header h1{font-size:clamp(2.5rem,12vw,4rem);line-height:1.03}header p{font-size:1rem;line-height:1.65}header .flex-col.sm\\:flex-row>a,header .flex-col.sm\\:flex-row>button{width:100%}#b2bAiDrawer{width:100%;max-width:100vw}#b2bSpecModal>div{width:calc(100% - 2rem);max-height:calc(100vh - 2rem);overflow-y:auto}input,select,textarea,button,a{-webkit-tap-highlight-color:transparent}} </style>
+    @media (max-width:767px){nav.fixed{height:64px;padding-left:1rem;padding-right:1rem}nav.fixed>div:first-child{font-size:1.05rem}nav.fixed .bg-motis-orange{padding:.55rem .85rem;font-size:.75rem;white-space:nowrap}header.pt-\\[80px\\]{padding-top:64px}header h1{font-size:clamp(2.5rem,12vw,4rem);line-height:1.03}header p{font-size:1rem;line-height:1.65}header .flex-col.sm\\:flex-row>a,header .flex-col.sm\\:flex-row>button{width:100%}#b2bAiDrawer{width:100%;max-width:100vw}#b2bSpecModal>div{width:calc(100% - 2rem);max-height:calc(100vh - 2rem);overflow-y:auto}input,select,textarea,button,a{-webkit-tap-highlight-color:transparent}} .footer-nav a{min-height:44px;display:inline-flex;align-items:center;white-space:nowrap}
+        @media (max-width:767px){.footer-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem 1rem;width:100%}.footer-nav a{justify-content:flex-start}}
+        @media (min-width:768px){.footer-nav{display:flex;flex-wrap:nowrap;justify-content:flex-end;gap:1.75rem}.footer-nav a{flex:0 0 auto}}
+    </style>
 </head>
 
 <body class="bg-motis-dark text-motis-light antialiased font-sans overflow-x-hidden selection:bg-motis-orange selection:text-white">
@@ -464,7 +467,7 @@
                     Where perfection is not enough. Engineered architectural coatings by Motis Industries Limited.
                 </p>
             </div>
-            <div class="flex flex-wrap md:justify-end gap-x-10 gap-y-4 text-sm font-medium tracking-widest uppercase text-slate-400">
+            <div class="footer-nav flex flex-wrap md:flex-nowrap md:justify-end gap-x-10 gap-y-4 text-sm font-medium tracking-widest uppercase text-slate-400">
                 <a class="hover:text-motis-orange transition-colors" href="index.html">Motis Industries</a>
                 <a class="hover:text-motis-orange transition-colors" href="#chemistry">Product Development</a>
                 <a class="hover:text-motis-orange transition-colors" href="#catalog">Products</a>
@@ -683,18 +686,15 @@
                         ctaBtn.innerHTML = '<span class="material-symbols-outlined text-base">chat</span><span>Send Estimate to WhatsApp & Request Quote</span>';
                         ctaBtn.addEventListener('click', () => {
                             const configuredPhone = window.MOTIS_CONFIG?.whatsappPhone;
+                            const waText = encodeURIComponent(`Hello Motis Industries! I got the following estimate from your AI Sales & Technical Inquiry Assistant:\n\n${aiText}\n\nI'd like to proceed with a formal quote.`);
                             if (configuredPhone && /^\+?[0-9]{7,15}$/.test(configuredPhone)) {
-                                const waText = encodeURIComponent(`Hello Motis Industries! I got the following estimate from your AI Sales & Technical Inquiry Assistant:\n\n${aiText}\n\nI'd like to proceed with a formal quote.`);
                                 window.open(`https://wa.me/${configuredPhone.replace('+', '')}?text=${waText}`, '_blank');
                             } else {
-                                // Fallback: guide the user to the enquiry form. The Project
-                                // Specifications field is left unchanged.
-                                const msgBox = document.getElementById('formMessage');
-                                if (msgBox) {
-                                    msgBox.scrollIntoView({ behavior: 'smooth' });
-                                    msgBox.focus();
-                                }
-                                if (typeof toggleAiDrawer === 'function') toggleAiDrawer(false);
+                                // Keep the CTA on the WhatsApp path even when a direct sales
+                                // number is not configured. WhatsApp can open a share flow with
+                                // the estimate pre-filled rather than redirecting to the form.
+                                const shareUrl = `https://wa.me/?text=${waText}`;
+                                window.open(shareUrl, '_blank', 'noopener,noreferrer');
                             }
                         });
                         // Append to the last AI bubble
