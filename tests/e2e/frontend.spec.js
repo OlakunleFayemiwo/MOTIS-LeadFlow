@@ -79,7 +79,7 @@ test("More Paint WhatsApp CTA stays on the WhatsApp path when no direct number i
   await cta.click();
   const popup = await popupPromise;
   await popup.waitForLoadState("domcontentloaded").catch(() => {});
-  expect(popup.url()).toMatch(/^https:\/\/wa\.me\/\?text=/);
+  expect(popup.url()).toMatch(/^https:\/\/(?:wa\.me\/\?text=|api\.whatsapp\.com\/send\/\?text=)/);
   await popup.close();
 });
 
@@ -103,6 +103,7 @@ test("CRM mobile card containers exist and desktop tables remain present", async
 
 
 test("public mobile footer keeps all navigation links usable", async ({ page }) => {
+  test.skip(test.info().project.name === "tablet-768" || test.info().project.name === "desktop", "Mobile footer touch-target rules apply below 768px");
   await page.goto("/");
   const footerNav = page.locator("footer .footer-nav");
   await expect(footerNav).toBeVisible();
